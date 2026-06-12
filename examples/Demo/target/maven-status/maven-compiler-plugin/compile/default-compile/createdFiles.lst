@@ -1,1 +1,16 @@
+fasttui\demoscene\effects\AsciiTunnelEffect.class
 fasttui\Demo.class
+fasttui\demoscene\effects\MatrixRainEffect.class
+fasttui\demoscene\effects\MatrixZoomEffect.class
+fasttui\demoscene\effects\DoomFireEffect.class
+fasttui\demoscene\DemosceneEffect.class
+fasttui\demoscene\effects\IntroEffect.class
+fasttui\Overlay.class
+fasttui\demoscene\effects\CheckerboardEffect.class
+fasttui\Overlay$1.class
+fasttui\demoscene\effects\AttractorEffect.class
+fasttui\RunDemoscene$1.class
+fasttui\RunDemoscene.class
+fasttui\demoscene\effects\CubeEffect.class
+fasttui\demoscene\effects\ImageZoomEffect.class
+fasttui\Demo$1.class

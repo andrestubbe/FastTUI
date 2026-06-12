@@ -12,7 +12,7 @@ call mvn compile dependency:copy-dependencies -DincludeScope=runtime -DskipTests
 if %ERRORLEVEL% NEQ 0 ( echo ❌ Compile failed. & pause & exit /b %ERRORLEVEL% )
 
 echo 🚀 Running Gradient Demo...
-java --enable-native-access=ALL-UNNAMED -cp "target/classes;target/dependency/*" fastterminal.RunGradient %*
+java --enable-native-access=ALL-UNNAMED -cp "target/classes;target/dependency/*" fasttui.RunGradient %*
 
 cd ..\..
 pause

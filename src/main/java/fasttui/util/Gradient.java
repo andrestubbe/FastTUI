@@ -1,4 +1,4 @@
-package fastterminal.util;
+package fasttui.util;
 
 import fastterminal.FastTerminalScene;
 

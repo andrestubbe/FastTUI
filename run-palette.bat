@@ -12,7 +12,7 @@ call mvn compile dependency:copy-dependencies -DincludeScope=runtime -DskipTests
 if %ERRORLEVEL% NEQ 0 ( echo ❌ Compile failed. & pause & exit /b %ERRORLEVEL% )
 
 echo 🚀 Running Palette Demo...
-java --enable-native-access=ALL-UNNAMED -cp "target/classes;target/dependency/*" fastterminal.RunPalette %*
+java --enable-native-access=ALL-UNNAMED -cp "target/classes;target/dependency/*" fasttui.RunPalette %*
 
 cd ..\..
 pause

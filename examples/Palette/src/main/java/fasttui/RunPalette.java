@@ -1,4 +1,11 @@
-package fastterminal;
+package fasttui;
+
+import fastterminal.FastTerminalScene;
+import fastterminal.FastTerminalRenderer;
+import fastterminal.FastTerminal;
+import fastterminal.AnsiMouse;
+import fastterminal.swing.SwingTerminalRenderer;
+
 
 import fastansi.FastANSI;
 import fastkeyboard.FastKeyboard;

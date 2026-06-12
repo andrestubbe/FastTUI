@@ -1,5 +1,5 @@
-fastterminal\RunGradient.class
-fastterminal\RunGradient$AnimatedGradient.class
-fastterminal\RunGradient$1.class
-fastterminal\RunPalette$1.class
-fastterminal\RunPalette.class
+fasttui\RunPalette$1.class
+fasttui\RunPalette.class
+fasttui\RunGradient$AnimatedGradient.class
+fasttui\RunGradient$1.class
+fasttui\RunGradient.class
