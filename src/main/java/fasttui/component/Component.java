@@ -3,7 +3,7 @@ package fasttui.component;
 import fastterminal.FastTerminalScene;
 
 /**
- * Base class for all high-performance TUI components in FastTerminal.
+ * Base class for all high-performance TUI components in FastTUI.
  */
 public abstract class Component {
     protected int x;

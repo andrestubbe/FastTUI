@@ -1,166 +1,77 @@
-# FastTUI — Native Windows XXX API for Java
+# FastTUI 🎨
 
-**High-performance native Windows XXX API for Java.**
+**A blazing fast, dependency-free Text-based User Interface (TUI) toolkit for Java.**
 
 [![Build](https://img.shields.io/github/actions/workflow/status/andrestubbe/FastTUI/maven.yml?branch=main)](https://github.com/andrestubbe/FastTUI/actions)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![JitPack](https://jitpack.io/v/andrestubbe/FastTUI.svg)](https://jitpack.io/#andrestubbe/FastTUI)
 
-[Insert Mission Statement here: FastTUI is the high-performance substrate of the FastJava ecosystem. It provides the hand-tuned native primitives required for...]
+FastTUI is a modern UI toolkit designed to bring beautiful, responsive, and highly interactive graphical interfaces directly to the terminal. Built on top of the ultra-low-latency `FastTerminal` engine, it completely discards the blocky aesthetics of the 90s and embraces modern design principles like True-Color gradients, smooth window shadows, and mouse-driven interactions.
 
 ```java
 // Quick Start — Example
-import fasttui.FastTUI;
+import fasttui.component.Panel;
+import fasttui.composable.Button;
+import fasttui.composable.Label;
 
-public class Demo {
+public class DemoApp {
     public static void main(String[] args) {
-        // Your code here
+        Panel window = new Panel(10, 5, 40, 15, "Welcome to FastTUI");
+        
+        Label text = new Label(2, 2, "This is a True-Color UI!");
+        Button btn = new Button(2, 4, 15, 3, "Click Me");
+        
+        window.addChild(text);
+        window.addChild(btn);
+        
+        // Render via FastTerminal
     }
 }
 ```
 
 ## Table of Contents
 - [Key Features](#key-features)
-- [Performance](#performance)
-- [API Quick Reference](#api-quick-reference)
+- [Architecture](#architecture)
+- [Available Components](#available-components)
 - [Installation](#installation)
-- [Technical Examples & Hero Demos](#technical-examples--hero-demos)
 - [Documentation](#documentation)
-- [Platform Support](#platform-support)
-- [License](#license)
-
----
 
 ## Key Features
--   **🚀 Native Performance** — Direct Win32/DirectX access via JNI.
--   **⚡ Zero Overhead** — No polling, purely event-driven callbacks.
--   **📦 Zero Dependencies** — Just requires Java 17+ and Windows.
+- **✨ True-Color Aesthetics:** Full 24-bit RGB support for all components. Includes high-performance utilities for smooth color gradients and transitions.
+- **🖱️ Native Mouse Interaction:** Drag, drop, resize, and click with full mouse support.
+- **🪟 Window Management:** Support for overlapping windows (`Panel`) with alpha-blended drop shadows and z-index ordering.
+- **🧩 Composable Widget System:** A rich library of ready-to-use form controls, buttons, and complex widgets.
+- **⚡ Zero Dependencies:** FastTUI relies entirely on the Java Standard Library and `FastTerminal` for rendering. No heavy third-party UI abstractions.
 
----
+## Architecture
+FastTUI focuses entirely on **Component Logic, State, and Event Dispatching**. 
+It delegates the actual cell-buffer drawing and native terminal hooks to its upstream engine, **FastTerminal**. This strict separation of concerns allows FastTUI to remain elegant and modular while inheriting FastTerminal's blistering 120 FPS rendering speeds.
 
-## 📊 Performance
-FastTUI is significantly faster than standard Java alternatives:
+## Available Components
+FastTUI provides a comprehensive suite of UI primitives:
+- `Panel`: Movable, resizable windows with title bars and drop shadows.
+- `Button`: Interactive buttons with hover and active states.
+- `Label`: Text displays with rich foreground/background color support.
+- `Input`: Single-line text input fields.
+- `Checkbox` & `Radio`: State-toggling controls.
+- `Dropdown`: Expandable selection menus.
+- `ProgressBar`: Smooth, gradient-filled progress tracking.
+- `FileNavigator`: A complex widget for browsing the local filesystem.
 
-| Operation | Standard Java | FastTUI Native | Speedup |
-|-----------|---------------|----------------|---------|
-| Action A  | 50 ms         | 5 ms           | **10x** |
-| Action B  | 120 ms        | 12 ms          | **10x** |
+## Installation
+Add FastTUI to your project's `pom.xml`:
 
----
-
-## API Quick Reference
-
-| Method | Description | Path |
-|--------|-------------|------|
-| `actionA(...)` | Brief description of action A. | [Reference →](REFERENCE.md#actiona) |
-| `actionB(...)` | Brief description of action B. | [Reference →](REFERENCE.md#actionb) |
-
-> [!TIP]
-> See **[REFERENCE.md](REFERENCE.md)** for full JNI contracts and fallback rules.
-
----
-
-## 📥 Installation
-
-FastJava modules are available via JitPack. Depending on the module type (Pure-Java or JNI-Native), select the appropriate integration:
-
-*   **Pure-Java Modules:** Only require the main module dependency.
-*   **JNI-Native Modules:** Require **two** dependencies: the module itself and `FastCore` (the mandatory native DLL loader).
-
-### Option 1: Maven (JitPack)
-Add the JitPack repository and the dependencies to your `pom.xml`:
 ```xml
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-
-<dependencies>
-    <!-- 1. The main Module -->
-    <dependency>
-        <groupId>com.github.andrestubbe</groupId>
-        <artifactId>fasttui</artifactId>
-        <version>v0.1.0</version>
-    </dependency>
-    
-    <!-- 2. FastCore (Required ONLY for JNI-Native Modules) -->
-    <dependency>
-        <groupId>com.github.andrestubbe</groupId>
-        <artifactId>fastcore</artifactId>
-        <version>v1.0.0</version>
-    </dependency>
-</dependencies>
+<dependency>
+    <groupId>com.github.andrestubbe</groupId>
+    <artifactId>FastTUI</artifactId>
+    <version>0.1.0</version>
+</dependency>
 ```
-
-### Option 2: Gradle (JitPack)
-Add this to your `build.gradle` file:
-```gradle
-repositories {
-    maven { url 'https://jitpack.io' }
-}
-
-dependencies {
-    implementation 'com.github.andrestubbe:fasttui:v0.1.0'
-    implementation 'com.github.andrestubbe:fastcore:v1.0.0' // Required ONLY for JNI-Native Modules
-}
-```
-
-### Option 3: Direct Download (No Build Tool)
-Download the latest pre-compiled JARs directly to add them to your project's classpath:
-
-1. 📦 [**fasttui-v0.1.0.jar**](https://github.com/andrestubbe/FastTUI/releases) (The Core Library)
-2. ⚙️ [**fastcore-v1.0.0.jar**](https://github.com/andrestubbe/FastCore/releases) (The Mandatory JNI Loader — ONLY for JNI-Native Modules)
-
-> [!IMPORTANT]
-> Both JARs must be present in your classpath for FastTUI's native functions to operate correctly.
-
----
-
-## Technical Examples & Hero Demos
-See the `examples/` directory for technical implementations and high-speed races:
-
-| Case | Java Example | Performance Race / Demo | JMH Benchmark |
-|------|--------------|-------------------------|---------------|
-| Feature A | [ExampleA.java](examples/src/main/java/fasttui/ExampleA.java) | [“Hero Demo A”](https://youtube.com) | [JMH_A.java](examples/src/main/java/fasttui/benchmark/JMH_A.java) |
-| Feature B | [ExampleB.java](examples/src/main/java/fasttui/ExampleB.java) | — | — |
-
----
+*(Requires FastTerminal as a peer dependency)*
 
 ## Documentation
-*   **[REFERENCE.md](REFERENCE.md)**: Full technical specification and JNI contracts.
-*   **[PHILOSOPHY.md](PHILOSOPHY.md)**: The "Native-First" philosophy.
-*   **[CHANGELOG.md](CHANGELOG.md)**: Project history.
-*   **[ROADMAP.md](ROADMAP.md)**: Future development and milestones.
-
----
-
-## Platform Support
-| Platform | Status |
-|----------|--------|
-| Windows 10/11 (x64) | ✅ Fully Supported |
-| Linux | 🚧 Planned |
-| macOS | 🚧 Planned |
-
----
-
-## License
-MIT License — See [LICENSE](LICENSE) file for details.
-
----
-
-## Related Projects
-
-- [FastCore](https://github.com/andrestubbe/FastCore) — Native Library Loader for Java
-- [FastAudioPlayer](https://github.com/andrestubbe/FastAudioPlayer) — Native Windows WASAPI Audio Playback for Java
-- [FastTTS](https://github.com/andrestubbe/FastTTS) — High-Performance Native Windows TTS API for Java
-- [FastSTT](https://github.com/andrestubbe/FastSTT) — Ultra-Fast Native Speech-to-Text for Java
-- [FastWakeWord](https://github.com/andrestubbe/FastWakeWord)
-
----
-
-**Part of the FastJava Ecosystem** — *Making the JVM faster. Small package. Maximum speed. Zero bloat. 🚀📋*
-
+- [Philosophy](docs/PHILOSOPHY.md) - The design principles behind FastTUI.
+- [Reference](docs/REFERENCE.md) - Detailed API references for all components.
+- [Roadmap](docs/ROADMAP.md) - Upcoming features and plans.

@@ -1,25 +1,23 @@
-# FastTUI Examples
+# FastTUI Examples 🖼️
 
-This folder contains standalone example projects to demonstrate and test the library.
+This directory contains functional, interactive demonstrations of the FastTUI framework. These demos are the best way to see the capabilities of the toolkit in action.
 
-## Demo
+## Demos & Walkthroughs
 
-The `Demo` project provides a simple "Hello World" implementation.
+### 1. The Core UI Demo (`Demo`)
+Located in `examples/Demo`. This is the primary playground demonstrating the native windowing system.
+- Spawns multiple interactive `Panel` windows.
+- Demonstrates overlapping drop shadows and alpha blending.
+- Showcases the `Button`, `Checkbox`, `Input`, and `ProgressBar` widgets.
+- Demonstrates the real-time `FocusManager` and native mouse drag/drop capabilities.
+**Run it:** `..\run-demo.bat` (from the FastTUI root)
 
-To run it locally using the JAR you just built:
-```bash
-cd Demo
-mvn compile exec:java
-```
+### 2. The Color Palette Explorer (`Palette`)
+Located in `examples/Palette`.
+- **RunPalette:** A beautiful interactive Color Picker demonstrating the `ColorPicker` widget, Hue/Saturation/Lightness sliders, and True-Color feedback.
+- **RunGradient:** A pure visual demonstration of the `Gradient` utility, showcasing mathematically perfect RGB linear interpolations over the terminal grid.
+**Run them:** `..\run-palette.bat` or `..\run-gradient.bat`
 
-## Benchmark
-
-The `Benchmark` project compares the performance of the native FastTUI library against standard Java equivalents.
-
-To run it:
-```bash
-cd Benchmark
-mvn compile exec:java
-```
-
-> **Note:** By default, the `pom.xml` files in these examples are configured to use `<scope>system</scope>` pointing to the `target/` directory of the parent project. This allows you to test changes immediately after building the main library without publishing to a repository. To see how an external user would use it via JitPack, check the comments inside the `pom.xml`.
+### 3. Microbenchmarks (`Benchmark`)
+A suite of JMH microbenchmarks measuring the throughput of UI component rendering and event dispatching.
+**Run it:** `..\run-benchmark.bat`
