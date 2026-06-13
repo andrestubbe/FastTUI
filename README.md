@@ -40,22 +40,73 @@ FastTUI provides a comprehensive suite of UI primitives:
 - `FileNavigator`: A complex widget for browsing the local filesystem.
 
 ## 🚀 Installation
-Add FastTUI to your project's `pom.xml`:
 
-```xml
-<dependency>
-    <groupId>com.github.andrestubbe</groupId>
-    <artifactId>FastTUI</artifactId>
-    <version>0.1.0</version>
-</dependency>
-```
-*(Requires FastTerminal as a peer dependency)*
+### Option 1: Maven (Recommended)
+
+Add the JitPack repository and the dependency to your pom.xml:
+
+`xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+<dependencies>
+    <dependency>
+        <groupId>com.github.andrestubbe</groupId>
+        <artifactId>FastTUI</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+    <!-- Required for rendering -->
+    <dependency>
+        <groupId>com.github.andrestubbe</groupId>
+        <artifactId>FastTerminal</artifactId>
+        <version>0.1.1</version>
+    </dependency>
+</dependencies>
+`
+
+### Option 2: Gradle (via JitPack)
+
+`groovy
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.andrestubbe:FastTUI:0.1.0'
+    // Required for rendering
+    implementation 'com.github.andrestubbe:FastTerminal:0.1.1'
+}
+`
+
+### Option 3: Direct Download (No Build Tool)
+
+Download the latest JAR directly to add it to your classpath:
+
+1. 📥 **[FastTUI-0.1.0.jar](https://github.com/andrestubbe/FastTUI/releases/download/0.1.0/FastTUI-0.1.0.jar)** (The UI Toolkit)
+2. 📥 **[FastTerminal-0.1.1.jar](https://github.com/andrestubbe/FastTerminal/releases/download/0.1.1/FastTerminal-0.1.1.jar)** (Required rendering engine)
+
+---
 
 ## 📖 Documentation
-- [Philosophy](docs/PHILOSOPHY.md) - The design principles behind FastTUI.
-- [Changelog](docs/CHANGELOG.md) - Release history and updates.
-- [Reference](docs/REFERENCE.md) - Detailed API references for all components.
-- [Roadmap](docs/ROADMAP.md) - Upcoming features and plans.
+
+* **[COMPILE.md](docs/COMPILE.md)**: Full compilation guide (Maven Build Setup).
+* **[REFERENCE.md](docs/REFERENCE.md)**: Exhaustive catalog of UI widgets and layout managers.
+* **[PHILOSOPHY.md](docs/PHILOSOPHY.md)**: Design principles for beautiful terminal interfaces.
+* **[ROADMAP.md](docs/ROADMAP.md)**: Planned milestone features and new components.
+* **[CHANGELOG.md](docs/CHANGELOG.md)**: Release history and updates.
+
+---
+
+## 💻 Platform Support
+
+| Platform      | Status            |
+|---------------|-------------------|
+| Windows 10/11 | ✅ Fully Supported |
+| Linux         | ⏳ Planned |
+| macOS         | ⏳ Planned |
 
 ---
 
