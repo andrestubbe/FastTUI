@@ -14,43 +14,43 @@ import fastkeyboard.FastKeyboardImpl;
 /**
  * @class TerminalOverlay
  * @brief Overlay demo: projects the UI panel directly on top of the existing terminal content.
- *
+ * <p>
  * Captures the console screen buffer once at startup via ReadConsoleOutput (works in
  * conhost.exe / classic cmd; degrades to a blank background in Windows Terminal).
  * The snapshot is stored as a background scene layer so that when the panel is dragged,
  * the cells it vacates are repainted from the snapshot rather than left blank.
- *
+ * <p>
  * Controls:
- *   Arrow keys  — navigate the file list
- *   Enter       — open folder / activate item
- *   ESC         — exit and restore terminal state
- *   Mouse       — drag, resize, minimize, close the panel
+ * Arrow keys  — navigate the file list
+ * Enter       — open folder / activate item
+ * ESC         — exit and restore terminal state
+ * Mouse       — drag, resize, minimize, close the panel
  */
 public class Overlay {
 
     // 🎨 Panel color constants — BeOS amber theme
-    public static final int PANEL_BG_COLOR      = 0xF4F4F5;
-    public static final int PANEL_BORDER_COLOR  = 0xE4E4E7;
-    public static final int PANEL_HEADER_BG     = 0xF0A500;
-    public static final int PANEL_HEADER_FG     = 0x3D1C00;
-    public static final int PANEL_SHADOW_FG     = 0x000000;
-    public static final int PANEL_SHADOW_BG     = 0x000000;
+    public static final int PANEL_BG_COLOR = 0xF4F4F5;
+    public static final int PANEL_BORDER_COLOR = 0xE4E4E7;
+    public static final int PANEL_HEADER_BG = 0xF0A500;
+    public static final int PANEL_HEADER_FG = 0x3D1C00;
+    public static final int PANEL_SHADOW_FG = 0x000000;
+    public static final int PANEL_SHADOW_BG = 0x000000;
     public static final double PANEL_SHADOW_ALPHA = 0.25;
 
     // Volatile mouse / interaction state
-    private static volatile int     mouseCellX        = -1;
-    private static volatile int     mouseCellY        = -1;
-    private static volatile boolean isLeftPressed     = false;
-    private static volatile boolean isRightPressed    = false;
-    private static volatile boolean isDragging        = false;
-    private static volatile boolean isResizing        = false;
-    private static volatile int     dragOffsetX       = 0;
-    private static volatile int     dragOffsetY       = 0;
+    private static volatile int mouseCellX = -1;
+    private static volatile int mouseCellY = -1;
+    private static volatile boolean isLeftPressed = false;
+    private static volatile boolean isRightPressed = false;
+    private static volatile boolean isDragging = false;
+    private static volatile boolean isResizing = false;
+    private static volatile int dragOffsetX = 0;
+    private static volatile int dragOffsetY = 0;
     private static volatile boolean isMinimizePressed = false;
 
-    private static volatile int     currentCols            = 100;
-    private static volatile int     currentRows            = 30;
-    private static volatile boolean lastCursorHiddenState  = false;
+    private static volatile int currentCols = 100;
+    private static volatile int currentRows = 30;
+    private static volatile boolean lastCursorHiddenState = false;
 
     public static void main(String[] args) {
         System.out.println("Initializing Terminal Overlay...");
@@ -66,34 +66,36 @@ public class Overlay {
                 cols = size[0];
                 rows = size[1];
             }
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
         currentCols = cols;
         currentRows = rows;
 
         // ── Snapshot the screen buffer BEFORE hiding the cursor or writing anything ──
         // Also record the cursor row so we know exactly where to return on exit.
         FastTerminalScene bgScene = new FastTerminalScene(0, 0, cols, rows);
-        final boolean[] hasSnapshot = { false };
-        final int[] startCursorRow = { rows - 1 }; // fallback: last row
+        final boolean[] hasSnapshot = {false};
+        final int[] startCursorRow = {rows - 1}; // fallback: last row
         try {
             int[] snap = FastTerminal.readConsoleOutput();
             if (snap != null && snap.length >= 2 && snap[0] > 0 && snap[1] > 0) {
                 int snapCols = snap[0];
                 int snapRows = snap[1];
-                int useCols  = Math.min(snapCols, cols);
-                int useRows  = Math.min(snapRows, rows);
+                int useCols = Math.min(snapCols, cols);
+                int useRows = Math.min(snapRows, rows);
                 for (int r = 0; r < useRows; r++) {
                     for (int c = 0; c < useCols; c++) {
                         int base = 2 + (r * snapCols + c) * 3;
-                        int cp   = snap[base];
-                        int fg   = snap[base + 1];
-                        int bg   = snap[base + 2];
+                        int cp = snap[base];
+                        int fg = snap[base + 1];
+                        int bg = snap[base + 2];
                         bgScene.writeCell(c, r, cp, fg, bg);
                     }
                 }
                 hasSnapshot[0] = true;
             }
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
 
         if (!hasSnapshot[0]) {
             // Fallback: dark neutral background so the panel still looks good
@@ -112,7 +114,8 @@ public class Overlay {
             if (curPos != null && curPos[1] >= 0) {
                 startCursorRow[0] = curPos[1]; // 0-based row
             }
-        } catch (Throwable ignored) {}
+        } catch (Throwable ignored) {
+        }
         // ─────────────────────────────────────────────────────────────────────────
 
         // Hide cursor — no alternate buffer, stay on the main screen
@@ -164,10 +167,18 @@ public class Overlay {
             if (isPressed) {
                 if (!FastTerminal.isTerminalFocused()) return;
                 switch (vKey) {
-                    case 0x1B: System.exit(0);              break; // ESC
-                    case 0x26: navigator.selectPrevious();  break; // Up
-                    case 0x28: navigator.selectNext();      break; // Down
-                    case 0x0D: navigator.activateSelected(); break; // Enter
+                    case 0x1B:
+                        System.exit(0);
+                        break; // ESC
+                    case 0x26:
+                        navigator.selectPrevious();
+                        break; // Up
+                    case 0x28:
+                        navigator.selectNext();
+                        break; // Down
+                    case 0x0D:
+                        navigator.activateSelected();
+                        break; // Enter
                 }
             }
         });
@@ -183,7 +194,7 @@ public class Overlay {
 
                 if (isResizing) {
                     int newW = Math.max(15, cellX - dashboard.getX() + 1);
-                    int newH = Math.max(5,  cellY - dashboard.getY() + 1);
+                    int newH = Math.max(5, cellY - dashboard.getY() + 1);
                     if (dashboard.getX() + newW > currentCols) newW = currentCols - dashboard.getX();
                     if (dashboard.getY() + newH > currentRows) newH = currentRows - dashboard.getY();
                     dashboard.setWidth(newW);
@@ -191,7 +202,7 @@ public class Overlay {
                 } else if (isDragging) {
                     int newX = Math.max(0, cellX - dragOffsetX);
                     int newY = Math.max(0, cellY - dragOffsetY);
-                    if (newX + dashboard.getWidth()  > currentCols) newX = currentCols - dashboard.getWidth();
+                    if (newX + dashboard.getWidth() > currentCols) newX = currentCols - dashboard.getWidth();
                     if (newY + dashboard.getHeight() > currentRows) newY = currentRows - dashboard.getHeight();
                     dashboard.setX(newX);
                     dashboard.setY(newY);
@@ -222,7 +233,7 @@ public class Overlay {
                                 if (!dashboard.isMinimized()) dashboard.toggleMinimize();
                                 isMinimizePressed = true;
                             } else {
-                                isDragging  = true;
+                                isDragging = true;
                                 dragOffsetX = mouseCellX - dx;
                                 dragOffsetY = mouseCellY - dy;
                             }
@@ -247,18 +258,19 @@ public class Overlay {
             }
 
             @Override
-            public void onMouseWheel(long deviceHandle, int delta) {}
+            public void onMouseWheel(long deviceHandle, int delta) {
+            }
         });
 
         // Shutdown hook — restore terminal to its exact pre-launch state
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 if (hasSnapshot[0]) {
-                    int[] cp  = bgScene.getCodepointBuffer();
-                    int[] fg  = bgScene.getFgBuffer();
-                    int[] bg  = bgScene.getBgBuffer();
-                    int   w   = bgScene.getWidth();
-                    int   h   = bgScene.getHeight();
+                    int[] cp = bgScene.getCodepointBuffer();
+                    int[] fg = bgScene.getFgBuffer();
+                    int[] bg = bgScene.getBgBuffer();
+                    int w = bgScene.getWidth();
+                    int h = bgScene.getHeight();
 
                     StringBuilder sb = new StringBuilder(w * h * 20);
                     int curFg = -2, curBg = -2;
@@ -267,21 +279,31 @@ public class Overlay {
                     // it was, regardless of where it was dragged to
                     for (int row = 0; row < h; row++) {
                         sb.append(FastANSI.CSI).append(row + 1).append(";1H");
-                        curFg = -2; curBg = -2;
+                        curFg = -2;
+                        curBg = -2;
                         for (int col = 0; col < w; col++) {
-                            int i   = row * w + col;
-                            int c   = cp[i];
-                            int f   = fg[i];
-                            int b   = bg[i];
-                            if (c == -99) { sb.append(' '); continue; }
+                            int i = row * w + col;
+                            int c = cp[i];
+                            int f = fg[i];
+                            int b = bg[i];
+                            if (c == -99) {
+                                sb.append(' ');
+                                continue;
+                            }
                             if (f != curFg) {
                                 if (f == -1) sb.append(FastANSI.FG_DEFAULT);
-                                else { int r=(f>>16)&0xFF,g=(f>>8)&0xFF,bl=f&0xFF; sb.append(FastANSI.CSI).append("38;2;").append(r).append(';').append(g).append(';').append(bl).append('m'); }
+                                else {
+                                    int r = (f >> 16) & 0xFF, g = (f >> 8) & 0xFF, bl = f & 0xFF;
+                                    sb.append(FastANSI.CSI).append("38;2;").append(r).append(';').append(g).append(';').append(bl).append('m');
+                                }
                                 curFg = f;
                             }
                             if (b != curBg) {
                                 if (b == -1) sb.append(FastANSI.BG_DEFAULT);
-                                else { int r=(b>>16)&0xFF,g=(b>>8)&0xFF,bl=b&0xFF; sb.append(FastANSI.CSI).append("48;2;").append(r).append(';').append(g).append(';').append(bl).append('m'); }
+                                else {
+                                    int r = (b >> 16) & 0xFF, g = (b >> 8) & 0xFF, bl = b & 0xFF;
+                                    sb.append(FastANSI.CSI).append("48;2;").append(r).append(';').append(g).append(';').append(bl).append('m');
+                                }
                                 curBg = b;
                             }
                             if (Character.isValidCodePoint(c)) sb.appendCodePoint(c);
@@ -302,11 +324,21 @@ public class Overlay {
                     System.out.write(bytes, 0, bytes.length);
                     System.out.flush();
                 }
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
             System.out.print(FastANSI.CURSOR_SHOW + FastANSI.RESET);
-            try { FastTerminal.setSystemCursorVisible(true); } catch (Throwable ignored) {}
-            try { keyboard.stopListening(); }                  catch (Throwable ignored) {}
-            try { mouse.close(); }                             catch (Throwable ignored) {}
+            try {
+                FastTerminal.setSystemCursorVisible(true);
+            } catch (Throwable ignored) {
+            }
+            try {
+                keyboard.stopListening();
+            } catch (Throwable ignored) {
+            }
+            try {
+                mouse.close();
+            } catch (Throwable ignored) {
+            }
         }));
 
         // ── Render loop ──────────────────────────────────────────────────────────
@@ -315,11 +347,16 @@ public class Overlay {
 
             // Cursor visibility
             boolean shouldHide = false;
-            try { shouldHide = FastTerminal.isTerminalFocused() && FastTerminal.isMouseOverTerminal(); }
-            catch (Throwable ignored) {}
+            try {
+                shouldHide = FastTerminal.isTerminalFocused() && FastTerminal.isMouseOverTerminal();
+            } catch (Throwable ignored) {
+            }
             if (shouldHide != lastCursorHiddenState) {
-                try { FastTerminal.setSystemCursorVisible(!shouldHide); lastCursorHiddenState = shouldHide; }
-                catch (Throwable ignored) {}
+                try {
+                    FastTerminal.setSystemCursorVisible(!shouldHide);
+                    lastCursorHiddenState = shouldHide;
+                } catch (Throwable ignored) {
+                }
             }
 
             // Terminal resize — rebuild both scenes and re-snapshot
@@ -333,7 +370,7 @@ public class Overlay {
                 bgScene.resize(cols, rows);
 
                 // Re-center panel
-                int newX = Math.max(0, (cols - dashboard.getWidth())  / 2);
+                int newX = Math.max(0, (cols - dashboard.getWidth()) / 2);
                 int newY = Math.max(0, (rows - dashboard.getHeight()) / 2);
                 dashboard.setX(newX);
                 dashboard.setY(newY);
@@ -344,8 +381,8 @@ public class Overlay {
                     if (snap != null && snap.length >= 2 && snap[0] > 0 && snap[1] > 0) {
                         int snapCols = snap[0];
                         int snapRows = snap[1];
-                        int useCols  = Math.min(snapCols, cols);
-                        int useRows  = Math.min(snapRows, rows);
+                        int useCols = Math.min(snapCols, cols);
+                        int useRows = Math.min(snapRows, rows);
                         for (int r = 0; r < useRows; r++) {
                             for (int c = 0; c < useCols; c++) {
                                 int base = 2 + (r * snapCols + c) * 3;
@@ -353,7 +390,8 @@ public class Overlay {
                             }
                         }
                     }
-                } catch (Throwable ignored) {}
+                } catch (Throwable ignored) {
+                }
             }
 
             // canvas holds only the panel + cursor — background comes from bgScene
@@ -369,9 +407,9 @@ public class Overlay {
             int my = mouseCellY;
             if (mx >= 0 && mx < cols && my >= 0 && my < rows) {
                 int cursorFg = 0xFFFFFF;
-                int cursorBg = isLeftPressed  ? 0xEF4444
-                             : isRightPressed ? 0x3B82F6
-                             :                  0x10B981;
+                int cursorBg = isLeftPressed ? 0xEF4444
+                        : isRightPressed ? 0x3B82F6
+                          : 0x10B981;
                 canvas.writeCellAlpha(mx, my, '↖', cursorFg, cursorBg, 1.0, 0.4);
             }
 
@@ -380,7 +418,10 @@ public class Overlay {
             long elapsed = System.currentTimeMillis() - startTime;
             long sleepTime = (1000 / 120) - elapsed;
             if (sleepTime > 0) {
-                try { Thread.sleep(sleepTime); } catch (InterruptedException ignored) {}
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException ignored) {
+                }
             }
         }
     }
