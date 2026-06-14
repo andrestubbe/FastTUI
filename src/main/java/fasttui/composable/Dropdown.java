@@ -101,16 +101,21 @@ public class Dropdown extends Component {
             }
         }
 
-        String label = items.get(selectedIndex) + " ▾";
-        if (label.length() > width - 2) {
-            label = label.substring(0, width - 4) + ".. ▾";
+        String headerText = items.get(selectedIndex);
+        int maxTextLen = width - 2;
+        if (headerText.length() > maxTextLen) {
+            headerText = headerText.substring(0, maxTextLen - 2) + "..";
         }
-        int textX = x + 1;
-        for (int i = 0; i < label.length(); i++) {
+        int textX = x;
+        for (int i = 0; i < headerText.length(); i++) {
             int cx = textX + i;
-            if (cx >= x && cx < x + width && cx < canvas.getWidth() && y >= 0 && y < canvas.getHeight()) {
-                canvas.writeCell(cx, y, label.charAt(i), fgColor, headerBg);
+            if (cx >= x && cx < x + width - 1 && cx < canvas.getWidth() && y >= 0 && y < canvas.getHeight()) {
+                canvas.writeCell(cx, y, headerText.charAt(i), fgColor, headerBg);
             }
+        }
+        int arrowX = x + width - 1;
+        if (arrowX >= x && arrowX < x + width && arrowX < canvas.getWidth() && y >= 0 && y < canvas.getHeight()) {
+            canvas.writeCell(arrowX, y, '↓', fgColor, headerBg);
         }
 
         // 2. Render expanded dropdown options
