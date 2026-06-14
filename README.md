@@ -7,7 +7,7 @@
 [![JitPack](https://img.shields.io/badge/JitPack-ready-green.svg)](https://jitpack.io/#andrestubbe/FastTUI)
 
 **⚡ A blazing fast, dependency-free Text-based User Interface (TUI) toolkit for Java, designed to bring beautiful, responsive, and highly interactive graphical interfaces directly to the terminal.**
-
+[README.md](examples/README.md)
 FastTUI is the high-level interactive user interface layer of the **FastJava** ecosystem. It discards the blocky aesthetics of the 90s and embraces modern design principles like True-Color gradients, smooth window shadows, and mouse-driven interactions.
 
 To achieve a completely responsive, zero-latency desktop terminal experience, FastTUI is designed to pair natively with the underlying rendering and parsing modules of the **FastJava** ecosystem:
