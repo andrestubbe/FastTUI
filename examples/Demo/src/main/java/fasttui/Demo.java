@@ -64,7 +64,7 @@ public class Demo {
         final FastKeyboard keyboard = new FastKeyboardImpl();
 
         // Load background image
-        String[] filenames = { "Image 1.png", "cyberpunk_city.png", "synthwave_sunset.png", "space_nebula.png" };
+        String[] filenames = { "background.png", "background.pnd", "Image 1.png", "cyberpunk_city.png", "synthwave_sunset.png", "space_nebula.png" };
         for (String filename : filenames) {
             try {
                 java.io.File imgFile = new java.io.File(filename);
