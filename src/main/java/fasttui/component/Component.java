@@ -2,18 +2,14 @@ package fasttui.component;
 
 import fastterminal.FastTerminalScene;
 
-/**
- * Base class for all high-performance TUI components in FastTUI.
- */
 public abstract class Component {
     protected int x;
     protected int y;
     protected int width;
     protected int height;
+    protected int backgroundColor = -1; // 0x0C0C0C
+    protected int foregroundColor = 0xCCCCCC;
     protected boolean visible = true;
-    protected int bgColor = 0x0E1726; // Slate default
-    protected int fgColor = 0xFFFFFF; // White default
-    protected boolean isHovered = false;
 
     public Component(int x, int y, int width, int height) {
         this.x = x;
@@ -22,53 +18,61 @@ public abstract class Component {
         this.height = height;
     }
 
-    public abstract void render(FastTerminalScene canvas);
+    public abstract void render(FastTerminalScene scene);
 
-    public boolean contains(int cellX, int cellY) {
-        return cellX >= x && cellX < x + width && cellY >= y && cellY < y + height;
+    public boolean isVisible() {
+        return visible;
     }
 
-    public void handleMouseMove(int cellX, int cellY) {
-        boolean previouslyHovered = isHovered;
-        isHovered = contains(cellX, cellY);
-        if (previouslyHovered != isHovered) {
-            onHoverChanged(isHovered);
-        }
+    public int getX() {
+        return x;
     }
 
-    public boolean handleMouseClick(int cellX, int cellY, boolean isPressed) {
-        if (contains(cellX, cellY)) {
-            if (isPressed) {
-                onPress();
-            } else {
-                onRelease();
-            }
-            return true;
-        }
-        return false;
+    public int getY() {
+        return y;
     }
 
-    public void handleMouseDrag(int cellX, int cellY) {
+    public int getWidth() {
+        return width;
     }
 
-    protected void onHoverChanged(boolean hovered) {}
-    protected void onPress() {}
-    protected void onRelease() {}
+    public int getHeight() {
+        return height;
+    }
 
-    // Getters and Setters
-    public int getX() { return x; }
-    public void setX(int x) { this.x = x; }
-    public int getY() { return y; }
-    public void setY(int y) { this.y = y; }
-    public int getWidth() { return width; }
-    public void setWidth(int width) { this.width = width; }
-    public int getHeight() { return height; }
-    public void setHeight(int height) { this.height = height; }
-    public boolean isVisible() { return visible; }
-    public void setVisible(boolean visible) { this.visible = visible; }
-    public int getBgColor() { return bgColor; }
-    public void setBgColor(int bgColor) { this.bgColor = bgColor; }
-    public int getFgColor() { return fgColor; }
-    public void setFgColor(int fgColor) { this.fgColor = fgColor; }
-    public boolean isHovered() { return isHovered; }
+    public int getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public int getForegroundColor() {
+        return foregroundColor;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public void setBackgroundColor(int backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    public void setForegroundColor(int foregroundColor) {
+        this.foregroundColor = foregroundColor;
+    }
 }

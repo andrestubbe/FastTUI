@@ -13,6 +13,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <exec.mainClass>fasttui.RunDemoscene</exec.mainClass>
     </properties>
     
     <repositories>
@@ -71,8 +72,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>fasttui.RunDemoscene</mainClass>
-                    <!-- Required for some native operations -->
+                    <mainClass>${exec.mainClass}</mainClass>
                     <commandlineArgs>--enable-native-access=ALL-UNNAMED</commandlineArgs>
                 </configuration>
             </plugin>

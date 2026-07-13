@@ -1,10 +1,11 @@
 package fasttui.composable;
-import fasttui.component.Component;
-import fasttui.component.Panel;
 
 import fastterminal.FastTerminalScene;
+import fasttui.behaviour.Behaviour;
+import fasttui.component.Component;
+import fasttui.component.Control;
 
-public class TextBox extends Component {
+public class TextBox extends Control {
     private StringBuilder text = new StringBuilder();
     private boolean focused = false;
     private int cursorPosition = 0;
@@ -12,61 +13,76 @@ public class TextBox extends Component {
 
     public TextBox(int x, int y, int width) {
         super(x, y, width, 1);
-        this.bgColor = -1;
-        this.fgColor = 0xFFFFFF;
+        this.backgroundColor = -1;
+        this.foregroundColor = 0xFFFFFF;
+
+        this.addBehavior(new Behaviour() {
+            @Override
+            public void onMousePressed(Component target, int mx, int my) {
+                focused = true;
+            }
+
+            @Override
+            public void onKeyPressed(Component target, int vKey, char keyChar) {
+                handleKey(vKey, keyChar);
+            }
+        });
     }
 
     @Override
-    public void render(FastTerminalScene canvas) {
+    public void render(FastTerminalScene scene) {
         if (!visible) return;
-        int currentBg = focused ? 0x27272A : bgColor;
-        
-        // Calculate scroll offset to keep the cursor visible within the width
+        int currentBg = focused ? 0x27272A : backgroundColor;
+
         int scrollOffset = 0;
         if (cursorPosition >= width) {
             scrollOffset = cursorPosition - width + 1;
         }
-        
+
         for (int i = 0; i < width; i++) {
             int charIdx = i + scrollOffset;
             char ch = ' ';
             if (charIdx < text.length()) {
                 ch = masked ? '*' : text.charAt(charIdx);
             }
-            
+
             int cellBg = currentBg;
             if (focused && charIdx == cursorPosition) {
-                cellBg = 0xAAAAAA; // Cursor block
+                cellBg = 0xAAAAAA;
             }
-            canvas.writeCell(x + i, y, ch, fgColor, cellBg);
+            scene.writeCell(x + i, y, ch, foregroundColor, cellBg);
         }
     }
 
-    @Override
-    protected void onPress() {
-        // Assume external focus manager will unfocus others
-        focused = true;
+    public void setFocused(boolean focused) {
+        this.focused = focused;
     }
 
-    public void setFocused(boolean focused) { this.focused = focused; }
-    public boolean isFocused() { return focused; }
-    
-    public void setMasked(boolean masked) { this.masked = masked; }
-    public boolean isMasked() { return masked; }
-    
+    public boolean isFocused() {
+        return focused;
+    }
+
+    public void setMasked(boolean masked) {
+        this.masked = masked;
+    }
+
+    public boolean isMasked() {
+        return masked;
+    }
+
     public void handleKey(int vKey, char keyChar) {
         if (!focused) return;
-        
-        if (vKey == 0x08) { // Backspace
+
+        if (vKey == 0x08) {
             if (text.length() > 0 && cursorPosition > 0) {
                 text.deleteCharAt(cursorPosition - 1);
                 cursorPosition--;
             }
-        } else if (vKey == 0x25) { // Left
+        } else if (vKey == 0x25) {
             if (cursorPosition > 0) cursorPosition--;
-        } else if (vKey == 0x27) { // Right
+        } else if (vKey == 0x27) {
             if (cursorPosition < text.length()) cursorPosition++;
-        } else if (keyChar == 22 || keyChar == '\u0016') { // Ctrl+V
+        } else if (keyChar == 22 || keyChar == '\u0016') {
             try {
                 java.awt.datatransfer.Clipboard clipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
                 java.awt.datatransfer.Transferable contents = clipboard.getContents(null);
@@ -82,7 +98,8 @@ public class TextBox extends Component {
                         }
                     }
                 }
-            } catch (Throwable ignored) {}
+            } catch (Throwable ignored) {
+            }
         } else if (Character.isDefined(keyChar) && keyChar >= 32 && keyChar < 127) {
             if (text.length() < 256) {
                 text.insert(cursorPosition, keyChar);
@@ -91,7 +108,9 @@ public class TextBox extends Component {
         }
     }
 
-    public String getText() { return text.toString(); }
+    public String getText() {
+        return text.toString();
+    }
 
     public void setText(String s) {
         this.text.setLength(0);

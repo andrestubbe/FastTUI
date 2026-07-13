@@ -1,13 +1,13 @@
-# FastTUI 0.1.0 [ALPHA-2026-06] — � — Native Windows TUI Framework for Java
+# FastTUI 0.1.1 [ALPHA-2026-07] — Native Windows TUI Framework for Java
 
-[![Status](https://img.shields.io/badge/status-0.1.0-brightgreen.svg)](https://github.com/andrestubbe/FastTUI/releases/tag/0.1.0)
+[![Status](https://img.shields.io/badge/status-0.1.1-brightgreen.svg)](https://github.com/andrestubbe/FastTUI/releases/tag/0.1.1)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
 [![JitPack](https://img.shields.io/badge/JitPack-ready-green.svg)](https://jitpack.io/#andrestubbe/FastTUI)
 
 **⚡ A blazing fast, dependency-free Text-based User Interface (TUI) toolkit for Java, designed to bring beautiful, responsive, and highly interactive graphical interfaces directly to the terminal.**
-[README.md](examples/README.md)
+
 FastTUI is the high-level interactive user interface layer of the **FastJava** ecosystem. It discards the blocky aesthetics of the 90s and embraces modern design principles like True-Color gradients, smooth window shadows, and mouse-driven interactions.
 
 To achieve a completely responsive, zero-latency desktop terminal experience, FastTUI is designed to pair natively with the underlying rendering and parsing modules of the **FastJava** ecosystem:
@@ -18,17 +18,17 @@ To achieve a completely responsive, zero-latency desktop terminal experience, Fa
 
 ---
 
-## 🎨 Key Features
+## Key Features
 - **✨ True-Color Aesthetics:** Full 24-bit RGB support for all components. Includes high-performance utilities for smooth color gradients and transitions.
 - **🖱️ Native Mouse Interaction:** Drag, drop, resize, and click with full mouse support.
 - **🪟 Window Management:** Support for overlapping windows (`Panel`) with alpha-blended drop shadows and z-index ordering.
 - **🧩 Composable Widget System:** A rich library of ready-to-use form controls, buttons, and complex widgets.
 
-## 🏗️ Architecture
+## Architecture
 FastTUI focuses entirely on **Component Logic, State, and Event Dispatching**. 
 It delegates the actual cell-buffer drawing and native terminal hooks to its upstream engine, **FastTerminal**. This strict separation of concerns allows FastTUI to remain elegant and modular while inheriting FastTerminal's blistering 120 FPS rendering speeds.
 
-## 📦 Available Components
+## Available Components
 FastTUI provides a comprehensive suite of UI primitives:
 - `Panel`: Movable, resizable windows with title bars and drop shadows.
 - `Button`: Interactive buttons with hover and active states.
@@ -39,13 +39,13 @@ FastTUI provides a comprehensive suite of UI primitives:
 - `ProgressBar`: Smooth, gradient-filled progress tracking.
 - `FileNavigator`: A complex widget for browsing the local filesystem.
 
-## 🚀 Installation
+## Installation
 
 ### Option 1: Maven (Recommended)
 
-Add the JitPack repository and the dependency to your pom.xml:
+Add the JitPack repository and the dependency to your `pom.xml`:
 
-`xml
+```xml
 <repositories>
     <repository>
         <id>jitpack.io</id>
@@ -56,7 +56,7 @@ Add the JitPack repository and the dependency to your pom.xml:
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastTUI</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
     </dependency>
     <!-- Required for rendering -->
     <dependency>
@@ -65,32 +65,32 @@ Add the JitPack repository and the dependency to your pom.xml:
         <version>0.1.1</version>
     </dependency>
 </dependencies>
-`
+```
 
 ### Option 2: Gradle (via JitPack)
 
-`groovy
+```groovy
 repositories {
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    implementation 'com.github.andrestubbe:FastTUI:0.1.0'
+    implementation 'com.github.andrestubbe:FastTUI:0.1.1'
     // Required for rendering
     implementation 'com.github.andrestubbe:FastTerminal:0.1.1'
 }
-`
+```
 
 ### Option 3: Direct Download (No Build Tool)
 
 Download the latest JAR directly to add it to your classpath:
 
-1. 📥 **[FastTUI-0.1.0.jar](https://github.com/andrestubbe/FastTUI/releases/download/0.1.0/FastTUI-0.1.0.jar)** (The UI Toolkit)
+1. 📥 **[FastTUI-0.1.1.jar](https://github.com/andrestubbe/FastTUI/releases/download/0.1.1/FastTUI-0.1.1.jar)** (The UI Toolkit)
 2. 📥 **[FastTerminal-0.1.1.jar](https://github.com/andrestubbe/FastTerminal/releases/download/0.1.1/FastTerminal-0.1.1.jar)** (Required rendering engine)
 
 ---
 
-## 📖 Documentation
+## Documentation
 
 * **[COMPILE.md](docs/COMPILE.md)**: Full compilation guide (Maven Build Setup).
 * **[REFERENCE.md](docs/REFERENCE.md)**: Exhaustive catalog of UI widgets and layout managers.
@@ -100,7 +100,7 @@ Download the latest JAR directly to add it to your classpath:
 
 ---
 
-## 💻 Platform Support
+## Platform Support
 
 | Platform      | Status            |
 |---------------|-------------------|

@@ -1,6 +1,6 @@
 package fasttui.layout;
+
 import fasttui.component.Component;
-import fasttui.component.Panel;
 
 import java.util.List;
 

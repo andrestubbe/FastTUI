@@ -10,7 +10,6 @@ import fastterminal.swing.SwingTerminalRenderer;
 import fastansi.FastANSI;
 import fastkeyboard.FastKeyboardListener;
 import fastmouse.FastMouseListener;
-import fastterminal.swing.SwingTerminalRenderer;
 import fasttui.component.Component;
 import fasttui.composable.Tabs;
 

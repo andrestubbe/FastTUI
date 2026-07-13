@@ -1,6 +1,7 @@
 package fasttui.composable;
+import fasttui.component.Control;
 import fasttui.component.Component;
-import fasttui.component.Panel;
+
 
 import fastterminal.FastTerminalScene;
 import java.io.File;
@@ -13,7 +14,7 @@ import java.util.List;
  * Supports directory browsing, folder navigation on click, hover highlights,
  * file size formatting, and automatic scaling/resizing.
  */
-public class FileNavigator extends Component {
+public class FileNavigator extends Control {
     private File currentDir;
     private List<File> filesList;
     private int scrollOffset = 0;
@@ -31,6 +32,48 @@ public class FileNavigator extends Component {
         // Start at current workspace root directory
         this.currentDir = new File(".").getAbsoluteFile().getParentFile();
         refreshFiles();
+
+        this.addBehavior(new fasttui.behaviour.Behaviour() {
+            @Override
+            public void onMouseMoved(Component target, int cellX, int cellY) {
+                if (contains(cellX, cellY)) {
+                    int row = cellY - (y + 1);
+                    int visibleHeight = height - 2;
+                    if (row >= 0 && row < visibleHeight) {
+                        int itemIndex = scrollOffset + row;
+                        if (itemIndex >= 0 && itemIndex < filesList.size()) {
+                            selectedIndex = itemIndex;
+                            return;
+                        }
+                    }
+                }
+                selectedIndex = -1;
+            }
+
+            @Override
+            public void onMouseReleased(Component target, int cellX, int cellY) {
+                if (contains(cellX, cellY)) {
+                    int row = cellY - (y + 1);
+                    int visibleHeight = height - 2;
+                    if (row >= 0 && row < visibleHeight) {
+                        int itemIndex = scrollOffset + row;
+                        if (itemIndex >= 0 && itemIndex < filesList.size()) {
+                            File selected = filesList.get(itemIndex);
+                            if (selected.getName().equals("..")) {
+                                File parent = currentDir.getParentFile();
+                                if (parent != null) {
+                                    currentDir = parent;
+                                    refreshFiles();
+                                }
+                            } else if (selected.isDirectory()) {
+                                currentDir = selected;
+                                refreshFiles();
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void refreshFiles() {
@@ -81,9 +124,9 @@ public class FileNavigator extends Component {
         if (visibleHeight <= 0) return;
 
         // Calculate brightness of bgColor to adapt directory, file, and metadata colors dynamically
-        int rBg = (bgColor >> 16) & 0xFF;
-        int gBg = (bgColor >> 8) & 0xFF;
-        int bBg = bgColor & 0xFF;
+        int rBg = (backgroundColor >> 16) & 0xFF;
+        int gBg = (backgroundColor >> 8) & 0xFF;
+        int bBg = backgroundColor & 0xFF;
         double brightness = (0.299 * rBg + 0.587 * gBg + 0.114 * bBg) / 255.0;
         boolean isLightBg = brightness > 0.5;
 
@@ -101,8 +144,8 @@ public class FileNavigator extends Component {
             int ry = y + 1 + i;
 
             boolean isHoveredRow = (selectedIndex == itemIndex);
-            int rowBg = isHoveredRow ? selectionBg : bgColor;
-            int rowFg = isHoveredRow ? selectionFg : fgColor;
+            int rowBg = isHoveredRow ? selectionBg : backgroundColor;
+            int rowFg = isHoveredRow ? selectionFg : foregroundColor;
 
             // Clear row — hovered rows are fully opaque; non-hovered rows have NO background (fully transparent)
             for (int c = x; c < x + width; c++) {
@@ -135,8 +178,8 @@ public class FileNavigator extends Component {
                 displayStr = displayStr.substring(0, width - 12) + "...";
             }
 
-            int folderColor = isHoveredRow ? selectionFg : fgColor; // Black/dark text for directories
-            int fileColor   = isHoveredRow ? selectionFg : fgColor;
+            int folderColor = isHoveredRow ? selectionFg : foregroundColor; // Black/dark text for directories
+            int fileColor   = isHoveredRow ? selectionFg : foregroundColor;
             int metaColor   = isHoveredRow ? selectionFg : (isLightBg ? 0x71717A : 0xA1A1AA);
 
             // For non-hovered rows, use fully transparent background (alpha 0.0)
@@ -159,56 +202,10 @@ public class FileNavigator extends Component {
             footerText = footerText.substring(0, width);
         }
         int footerColor = isLightBg ? 0x71717A : 0xA1A1AA;
-        canvas.writeStringAlpha(x + 1, y + height - 1, footerText, footerColor, bgColor, 1.0, 0.0);
+        canvas.writeStringAlpha(x + 1, y + height - 1, footerText, footerColor, backgroundColor, 1.0, 0.0);
     }
 
-    @Override
-    public void handleMouseMove(int cellX, int cellY) {
-        super.handleMouseMove(cellX, cellY);
 
-        if (contains(cellX, cellY)) {
-            // Find which row the mouse is over
-            int row = cellY - (y + 1);
-            int visibleHeight = height - 2;
-            if (row >= 0 && row < visibleHeight) {
-                int itemIndex = scrollOffset + row;
-                if (itemIndex >= 0 && itemIndex < filesList.size()) {
-                    selectedIndex = itemIndex;
-                    return;
-                }
-            }
-        }
-        selectedIndex = -1;
-    }
-
-    @Override
-    public boolean handleMouseClick(int cellX, int cellY, boolean isPressed) {
-        if (!isPressed && contains(cellX, cellY)) {
-            // Trigger item click action on release
-            int row = cellY - (y + 1);
-            int visibleHeight = height - 2;
-            if (row >= 0 && row < visibleHeight) {
-                int itemIndex = scrollOffset + row;
-                if (itemIndex >= 0 && itemIndex < filesList.size()) {
-                    File selected = filesList.get(itemIndex);
-                    if (selected.getName().equals("..")) {
-                        // Go up
-                        File parent = currentDir.getParentFile();
-                        if (parent != null) {
-                            currentDir = parent;
-                            refreshFiles();
-                        }
-                    } else if (selected.isDirectory()) {
-                        // Go in
-                        currentDir = selected;
-                        refreshFiles();
-                    }
-                    return true;
-                }
-            }
-        }
-        return super.handleMouseClick(cellX, cellY, isPressed);
-    }
 
     private String truncatePath(String path, int maxLen) {
         if (path.length() <= maxLen) return path;

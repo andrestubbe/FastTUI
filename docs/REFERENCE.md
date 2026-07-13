@@ -14,7 +14,7 @@ This document provides a high-level overview of the available classes, modules, 
 
 ## 2. Containers and Windows
 
-*   **`Panel`** (`fasttui.component.Panel`)
+*   **`Panel`** (`fasttui.component.todo.Panel`)
     The primary window container. Panels support titles, nested children, absolute positioning, transparency (alpha channel shadow rendering), and drag-to-move capabilities out-of-the-box.
 
 ## 3. Composable Widgets

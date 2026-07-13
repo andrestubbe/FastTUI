@@ -1,67 +1,111 @@
 package fasttui.composable;
-import fasttui.component.Component;
-import fasttui.component.Panel;
 
 import fastterminal.FastTerminalScene;
+import fasttui.component.BorderStyle;
+import fasttui.component.Component;
+import fasttui.component.Container;
 
-public class Table extends Component {
-    private String[] headers;
-    private String[][] data;
-    private int[] columnWidths;
+public class Table extends Container {
 
-    public Table(int x, int y, int width, int height, String[] headers, String[][] data, int[] columnWidths) {
+    private final int[] columnWidths;
+    private final Component[][] cellComponents;
+    private BorderStyle borderStyle = BorderStyle.SINGLE;
+    private int borderColor = 0x767676; // Campbell Gray for dividers
+
+    public Table(int x, int y, int width, int height, int rows, int cols, int[] columnWidths) {
         super(x, y, width, height);
-        this.headers = headers;
-        this.data = data;
         this.columnWidths = columnWidths;
-        this.bgColor = 0x111111;
-        this.fgColor = 0xCCCCCC;
+        this.cellComponents = new Component[rows][cols];
+        rebuildGrid();
+    }
+
+    public void rebuildGrid() {
+        this.children.clear();
+
+        int rows = cellComponents.length;
+        int cols = cellComponents[0].length;
+        int currentY = 0;
+
+        for (int r = 0; r < rows; r++) {
+            if (currentY >= height) break;
+
+            int currentX = 0;
+            for (int c = 0; c < cols; c++) {
+                int w = columnWidths[c];
+                Component cellComp = cellComponents[r][c];
+
+                if (cellComp != null) {
+                    // Position component relative to Table
+                    cellComp.setX(currentX);
+                    cellComp.setY(currentY);
+                    cellComp.setWidth(w);
+                    cellComp.setHeight(1);
+                    this.add(cellComp);
+                }
+
+                currentX += w;
+                if (borderStyle != BorderStyle.NONE && c < cols - 1) {
+                    currentX++; // Account for column separator
+                }
+            }
+            currentY++;
+        }
     }
 
     @Override
-    public void render(FastTerminalScene canvas) {
+    public void render(FastTerminalScene scene) {
         if (!visible) return;
-        
-        int currentY = y;
-        // Render Header
-        renderRow(canvas, currentY, headers, 0x444444, 0xFFFFFF);
-        currentY++;
-        
-        // Render Data
-        for (int i = 0; i < data.length && currentY < y + height; i++) {
-            int rowBg = (i % 2 == 0) ? 0x222222 : 0x1A1A1A;
-            renderRow(canvas, currentY, data[i], rowBg, fgColor);
-            currentY++;
+
+        // Draw general background if set
+        if (backgroundColor != -1) {
+            for (int r = 0; r < height; r++) {
+                for (int c = 0; c < width; c++) {
+                    scene.writeCell(x + c, y + r, ' ', -1, backgroundColor);
+                }
+            }
         }
-        
-        // Fill rest with background
-        for (; currentY < y + height; currentY++) {
-            for (int cx = x; cx < x + width; cx++) {
-                canvas.writeCell(cx, currentY, ' ', fgColor, bgColor);
+
+        // Render cell child components
+        super.render(scene);
+
+        // Draw vertical grid separators (dividers)
+        if (borderStyle != BorderStyle.NONE) {
+            char separator = borderStyle.verticalLeft;
+            int totalRows = Math.min(height, cellComponents.length);
+
+            for (int r = 0; r < totalRows; r++) {
+                int currentX = x;
+                for (int col = 0; col < columnWidths.length - 1; col++) {
+                    currentX += columnWidths[col];
+                    if (currentX < x + width) {
+                        scene.writeCell(currentX, y + r, separator, borderColor, backgroundColor);
+                        currentX++;
+                    }
+                }
             }
         }
     }
-    
-    private void renderRow(FastTerminalScene canvas, int rowY, String[] rowData, int bg, int fg) {
-        int currentX = x;
-        for (int i = 0; i < columnWidths.length; i++) {
-            String text = (i < rowData.length && rowData[i] != null) ? rowData[i] : "";
-            int w = columnWidths[i];
-            
-            for (int c = 0; c < w; c++) {
-                char ch = (c < text.length()) ? text.charAt(c) : ' ';
-                if (currentX + c < x + width) {
-                    canvas.writeCell(currentX + c, rowY, ch, fg, bg);
-                }
-            }
-            currentX += w;
-            if (currentX < x + width) {
-                canvas.writeCell(currentX, rowY, '│', fg, bg);
-                currentX++;
-            }
+
+    public void setCell(int row, int col, Component comp) {
+        if (row >= 0 && row < cellComponents.length && col >= 0 && col < cellComponents[row].length) {
+            cellComponents[row][col] = comp;
+            rebuildGrid();
         }
-        for (; currentX < x + width; currentX++) {
-             canvas.writeCell(currentX, rowY, ' ', fg, bg);
+    }
+
+    public Component getCell(int row, int col) {
+        if (row >= 0 && row < cellComponents.length && col >= 0 && col < cellComponents[row].length) {
+            return cellComponents[row][col];
         }
+        return null;
+    }
+
+    public void setBorderStyle(BorderStyle borderStyle) {
+        this.borderStyle = borderStyle;
+        rebuildGrid();
+    }
+
+    public void setBorderColor(int borderColor) {
+        this.borderColor = borderColor;
     }
 }
