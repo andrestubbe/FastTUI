@@ -22,8 +22,8 @@ This document provides a high-level overview of the available classes, modules, 
 All widgets reside in `fasttui.composable.*`.
 
 *   **`Button`**: Clickable action trigger with active hover states.
-*   **`Label`**: Read-only text display supporting True-Color formatting.
-*   **`Input`**: A single-line text field allowing keyboard input, cursor movement, and backspacing.
+*   **`Label`**: Read-only textarea display supporting True-Color formatting.
+*   **`Input`**: A single-line textarea field allowing keyboard input, cursor movement, and backspacing.
 *   **`Checkbox`**: A boolean toggle state control.
 *   **`Radio`**: A mutually exclusive selector (typically used in groups).
 *   **`Dropdown`**: A collapsible select menu.

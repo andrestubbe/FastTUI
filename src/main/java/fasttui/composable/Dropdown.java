@@ -1,14 +1,19 @@
-package fasttui.composable.todo;
+package fasttui.composable;
 
 import fasttui.component.BorderStyle;
 import fasttui.component.Container;
-import fasttui.composable.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class Dropdown extends Container {
+
+    public enum ExpandDirection {
+        DOWN,
+        UP
+    }
+
     private List<String> items;
     private int selectedIndex = 0;
     private boolean expanded = false;
@@ -32,6 +37,8 @@ public class Dropdown extends Container {
     private int headerHeight = 1;
     private BorderStyle headerBorderStyle = BorderStyle.NONE;
 
+    private ExpandDirection expandDirection = ExpandDirection.DOWN;
+
     public Dropdown(int x, int y, int width, List<String> items, Consumer<Integer> onSelect) {
         this(x, y, width, 1, items, onSelect);
     }
@@ -39,9 +46,13 @@ public class Dropdown extends Container {
     public Dropdown(int x, int y, int width, int headerHeight, List<String> items, Consumer<Integer> onSelect) {
         super(x, y, width, headerHeight);
         this.headerHeight = headerHeight;
-        this.headerBorderStyle = BorderStyle.NONE;
         this.items = items;
         this.onSelect = onSelect;
+        rebuildComponents();
+    }
+
+    public void setExpandDirection(ExpandDirection dir) {
+        this.expandDirection = dir;
         rebuildComponents();
     }
 
@@ -67,12 +78,14 @@ public class Dropdown extends Container {
     }
 
     private void rebuildComponents() {
-        // Clear children
         this.children.clear();
         this.optionBtns.clear();
 
-        // 1. Create header button with arrow indicator
-        String arrow = expanded ? " ↑" : " ↓";
+        // Header text + arrow
+        String arrow = expanded
+                ? (expandDirection == ExpandDirection.DOWN ? " ↑" : " ↓")
+                : (expandDirection == ExpandDirection.DOWN ? " ↓" : " ↑");
+
         String headerText = (items != null && !items.isEmpty()) ? items.get(selectedIndex) : "";
 
         boolean hasBorder = (headerBorderStyle != BorderStyle.NONE);
@@ -83,9 +96,7 @@ public class Dropdown extends Container {
         }
         headerText += arrow;
 
-        headerBtn = new Button(0, 0, width, headerHeight, headerText, () -> {
-            toggleExpanded();
-        });
+        headerBtn = new Button(0, 0, width, headerHeight, headerText, this::toggleExpanded);
         headerBtn.setBorderStyle(headerBorderStyle);
         headerBtn.setBackgroundNormal(headerBgNormal);
         headerBtn.setForegroundNormal(headerFgNormal);
@@ -93,29 +104,64 @@ public class Dropdown extends Container {
         headerBtn.setForegroundHover(headerFgHover);
         this.add(headerBtn);
 
-        // 2. Create option buttons if expanded
+        // Options
         if (expanded && items != null) {
             int visibleCount = Math.min(items.size(), maxVisibleItems);
             this.setHeight(headerHeight + visibleCount);
 
-            for (int i = 0; i < visibleCount; i++) {
-                int itemIdx = scrollOffset + i;
-                String itemText = items.get(itemIdx);
+            if (expandDirection == ExpandDirection.DOWN) {
+                // ▼ DOWN
+                for (int i = 0; i < visibleCount; i++) {
+                    int itemIdx = scrollOffset + i;
+                    String itemText = items.get(itemIdx);
 
-                final int finalIdx = itemIdx;
-                Button optBtn = new Button(0, headerHeight + i, width, 1, " " + itemText, () -> {
-                    selectItem(finalIdx);
-                });
+                    final int finalIdx = itemIdx;
+                    Button optBtn = new Button(
+                            0,
+                            headerHeight + i,
+                            width,
+                            1,
+                            " " + itemText,
+                            () -> selectItem(finalIdx)
+                    );
 
-                optBtn.setBackgroundNormal(optionBgNormal);
-                optBtn.setForegroundNormal(optionFgNormal);
-                optBtn.setBackgroundHover(optionBgHover);
-                optBtn.setForegroundHover(optionFgHover);
-                optBtn.setAlignment(Button.Alignment.LEFT);
+                    optBtn.setBackgroundNormal(optionBgNormal);
+                    optBtn.setForegroundNormal(optionFgNormal);
+                    optBtn.setBackgroundHover(optionBgHover);
+                    optBtn.setForegroundHover(optionFgHover);
+                    optBtn.setAlignment(Button.Alignment.LEFT);
 
-                this.add(optBtn);
-                this.optionBtns.add(optBtn);
+                    this.add(optBtn);
+                    this.optionBtns.add(optBtn);
+                }
+
+            } else {
+                // ▲ UP
+                for (int i = 0; i < visibleCount; i++) {
+                    int itemIdx = scrollOffset + i;
+                    String itemText = items.get(itemIdx);
+
+                    final int finalIdx = itemIdx;
+                    Button optBtn = new Button(
+                            0,
+                            -visibleCount + i,
+                            width,
+                            1,
+                            " " + itemText,
+                            () -> selectItem(finalIdx)
+                    );
+
+                    optBtn.setBackgroundNormal(optionBgNormal);
+                    optBtn.setForegroundNormal(optionFgNormal);
+                    optBtn.setBackgroundHover(optionBgHover);
+                    optBtn.setForegroundHover(optionFgHover);
+                    optBtn.setAlignment(Button.Alignment.LEFT);
+
+                    this.add(optBtn);
+                    this.optionBtns.add(optBtn);
+                }
             }
+
         } else {
             this.setHeight(headerHeight);
         }

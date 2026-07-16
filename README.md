@@ -33,7 +33,7 @@ FastTUI provides a comprehensive suite of UI primitives:
 - `Panel`: Movable, resizable windows with title bars and drop shadows.
 - `Button`: Interactive buttons with hover and active states.
 - `Label`: Text displays with rich foreground/background color support.
-- `Input`: Single-line text input fields.
+- `Input`: Single-line textarea input fields.
 - `Checkbox` & `Radio`: State-toggling controls.
 - `Dropdown`: Expandable selection menus.
 - `ProgressBar`: Smooth, gradient-filled progress tracking.

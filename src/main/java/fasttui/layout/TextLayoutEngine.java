@@ -4,24 +4,31 @@ import fastterminal.FastTerminalScene;
 
 public final class TextLayoutEngine {
 
+    // --- Token types ---
+    private static final int TYPE_WORD    = 0;
+    private static final int TYPE_SPACE   = 1;
+    private static final int TYPE_NEWLINE = 2;
+    private static final int TYPE_TAB     = 3;
+
+    private static final int TAB_WIDTH = 4;
+
     // --- Token buffers ---
-    private int[] tokenType = new int[2048];
-    private int[] tokenStart = new int[2048];
-    private int[] tokenEnd = new int[2048];
+    private final int[] tokenType  = new int[4096];
+    private final int[] tokenStart = new int[4096];
+    private final int[] tokenEnd   = new int[4096];
     private int tokenCount = 0;
 
-    private static final int TYPE_WORD = 0;
-    private static final int TYPE_SPACE = 1;
-    private static final int TYPE_NEWLINE = 2;
-
     // --- Line buffers ---
-    private int[] lineStart = new int[512];
-    private int[] lineLength = new int[512];
-    private int[] lineTokenIndex = new int[8192];
+    private final int[] lineStart      = new int[1024];
+    private final int[] lineLength     = new int[1024];
+    private final int[] lineTokenIndex = new int[16384];
     private int lineCount = 0;
 
     private String currentText;
 
+    // ------------------------------------------------------------
+    // PUBLIC API
+    // ------------------------------------------------------------
     public void layout(String text, int maxWidth) {
         this.currentText = text;
         tokenize(text);
@@ -39,6 +46,7 @@ public final class TextLayoutEngine {
         while (i < len) {
             char c = text.charAt(i);
 
+            // NEWLINE
             if (c == '\n') {
                 tokenType[tokenCount] = TYPE_NEWLINE;
                 tokenStart[tokenCount] = i;
@@ -48,6 +56,7 @@ public final class TextLayoutEngine {
                 continue;
             }
 
+            // SPACE
             if (c == ' ') {
                 int start = i;
                 while (i < len && text.charAt(i) == ' ') i++;
@@ -59,8 +68,23 @@ public final class TextLayoutEngine {
                 continue;
             }
 
+            // TAB
+            if (c == '\t') {
+                tokenType[tokenCount] = TYPE_TAB;
+                tokenStart[tokenCount] = i;
+                tokenEnd[tokenCount] = i + 1;
+                tokenCount++;
+                i++;
+                continue;
+            }
+
+            // WORD
             int start = i;
-            while (i < len && text.charAt(i) != ' ' && text.charAt(i) != '\n') i++;
+            while (i < len) {
+                char cc = text.charAt(i);
+                if (cc == ' ' || cc == '\n' || cc == '\t') break;
+                i++;
+            }
 
             tokenType[tokenCount] = TYPE_WORD;
             tokenStart[tokenCount] = start;
@@ -83,8 +107,14 @@ public final class TextLayoutEngine {
             int type = tokenType[t];
             int start = tokenStart[t];
             int end = tokenEnd[t];
-            int tokenWidth = end - start;
 
+            int tokenWidth =
+                    (type == TYPE_TAB) ? TAB_WIDTH :
+                            (type == TYPE_SPACE) ? (end - start) :
+                            (type == TYPE_WORD) ? (end - start) :
+                            0;
+
+            // NEWLINE → force line break
             if (type == TYPE_NEWLINE) {
                 lineStart[lineCount] = currentLineStart;
                 lineLength[lineCount] = lineTokenWritePos - currentLineStart;
@@ -95,11 +125,13 @@ public final class TextLayoutEngine {
                 continue;
             }
 
-            if (type == TYPE_SPACE) {
+            // SPACE or TAB
+            if (type == TYPE_SPACE || type == TYPE_TAB) {
                 if (currentWidth > 0 && currentWidth + tokenWidth <= maxWidth) {
                     lineTokenIndex[lineTokenWritePos++] = t;
                     currentWidth += tokenWidth;
                 } else if (currentWidth > 0) {
+                    // wrap
                     lineStart[lineCount] = currentLineStart;
                     lineLength[lineCount] = lineTokenWritePos - currentLineStart;
                     lineCount++;
@@ -115,6 +147,7 @@ public final class TextLayoutEngine {
                 lineTokenIndex[lineTokenWritePos++] = t;
                 currentWidth += tokenWidth;
             } else {
+                // wrap line
                 if (currentWidth > 0) {
                     lineStart[lineCount] = currentLineStart;
                     lineLength[lineCount] = lineTokenWritePos - currentLineStart;
@@ -124,7 +157,7 @@ public final class TextLayoutEngine {
                     currentLineStart = lineTokenWritePos;
                 }
 
-                // Split long word
+                // split long word
                 int pos = start;
                 while (pos < end) {
                     int chunk = Math.min(maxWidth, end - pos);
@@ -150,6 +183,7 @@ public final class TextLayoutEngine {
             }
         }
 
+        // final line
         if (lineTokenWritePos > currentLineStart) {
             lineStart[lineCount] = currentLineStart;
             lineLength[lineCount] = lineTokenWritePos - currentLineStart;
@@ -175,9 +209,29 @@ public final class TextLayoutEngine {
 
             for (int i = 0; i < ll; i++) {
                 int tokenIndex = lineTokenIndex[ls + i];
+                int type = tokenType[tokenIndex];
                 int s = tokenStart[tokenIndex];
                 int e = tokenEnd[tokenIndex];
 
+                if (type == TYPE_TAB) {
+                    // render TAB as spaces
+                    for (int k = 0; k < TAB_WIDTH; k++) {
+                        if (xPos < x + maxWidth && yPos >= 0 && yPos < scene.getHeight()) {
+                            int finalBg = bg;
+                            if (finalBg == -1 && sceneBgBuffer != null) {
+                                int idx = yPos * sceneW + xPos;
+                                if (idx >= 0 && idx < sceneBgBuffer.length) {
+                                    finalBg = sceneBgBuffer[idx];
+                                }
+                            }
+                            scene.writeCell(xPos, yPos, ' ', fg, finalBg);
+                            xPos++;
+                        }
+                    }
+                    continue;
+                }
+
+                // normal tokens
                 for (int p = s; p < e; p++) {
                     if (xPos < x + maxWidth && yPos >= 0 && yPos < scene.getHeight()) {
                         int finalBg = bg;

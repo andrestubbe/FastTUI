@@ -11,13 +11,13 @@
 ## 🔜 v0.2.0: Advanced Layouts & Modals
 *   **Flexbox/Grid Layout Managers:** Instead of absolute cell coordinates, introduce `HBox`, `VBox`, and `Grid` classes to auto-align child components dynamically.
 *   **Modal Dialogs:** First-class support for blocking popup dialogs (Alerts, Confirmations) that gray out the background panels.
-*   **Scrollbars & Clipping:** Implementing `ScrollView` containers with overflow clipping so panels can host arbitrarily large lists or long text.
+*   **Scrollbars & Clipping:** Implementing `ScrollView` containers with overflow clipping so panels can host arbitrarily large lists or long textarea.
 
 ## 🌟 v0.3.0: Theming & Styling Engine
 *   **Style Tokens:** Move away from hardcoded hex constants toward a themeable token engine (e.g., `Theme.setPrimaryColor()`, `Theme.toggleDarkMode()`).
 *   **Animations:** Smooth interpolation for UI state changes (e.g., buttons expanding when hovered, or windows smoothly sliding into view).
-*   **Rich Text Area:** A fully functional multi-line text editor component with syntax highlighting support.
+*   **Rich Text Area:** A fully functional multi-line textarea editor component with syntax highlighting support.
 
 ## 🚀 v1.0.0: Maturity
-*   **Full Accessibility:** Screen-reader support via terminal standard text outputs where possible.
+*   **Full Accessibility:** Screen-reader support via terminal standard textarea outputs where possible.
 *   **Extensive Widget Library:** Datatables, Tree-views, and interactive Charts out of the box.

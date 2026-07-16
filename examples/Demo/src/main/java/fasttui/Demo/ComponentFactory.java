@@ -1,9 +1,6 @@
 package fasttui.Demo;
 
-import fasttui.component.BorderStyle;
-import fasttui.component.Box;
-import fasttui.component.Component;
-import fasttui.component.Text;
+import fasttui.component.*;
 import fasttui.composable.Line;
 
 public class ComponentFactory {
@@ -58,7 +55,7 @@ public class ComponentFactory {
             int labelX = (style == BorderStyle.NONE) ? 0 : 1;
             int labelY = 0;
             int labelW = Math.max(0, size[0] - 2);
-            Text label = new Text(labelX, labelY, labelW, 1);
+            TextArea label = new TextArea(labelX, labelY, labelW, 1);
             
             int labelForeground = ParamParser.getInt(config.extraArg, "labelForeground", -1);
             if (labelForeground == -1) {
@@ -84,19 +81,19 @@ public class ComponentFactory {
             int textW = Math.max(0, size[0] - textOffsetLeft - textOffsetRight);
             int textH = Math.max(0, size[1] - textOffsetTop - textOffsetBottom);
             
-            Text text = new Text(textOffsetLeft, textOffsetTop, textW, textH);
+            TextArea textarea = new TextArea(textOffsetLeft, textOffsetTop, textW, textH);
             
             int padX = ParamParser.getInt(config.extraArg, "padX", 0);
             int padY = ParamParser.getInt(config.extraArg, "padY", 0);
-            text.setPaddingX(padX);
-            text.setPaddingY(padY);
+            textarea.setPaddingX(padX);
+            textarea.setPaddingY(padY);
             
             int contentFg = ParamParser.getInt(config.extraArg, "contentForeground", -1);
-            text.setForegroundColor(contentFg != -1 ? contentFg : fg);
-            text.setBackgroundColor(box.getBackgroundColor());
+            textarea.setForegroundColor(contentFg != -1 ? contentFg : fg);
+            textarea.setBackgroundColor(box.getBackgroundColor());
             
-            text.setText(textVal.replace("_", " ").replace("\\n", "\n"));
-            box.add(text);
+            textarea.setText(textVal.replace("_", " ").replace("\\n", "\n"));
+            box.add(textarea);
         }
 
         return box;

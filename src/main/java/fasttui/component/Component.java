@@ -3,11 +3,12 @@ package fasttui.component;
 import fastterminal.FastTerminalScene;
 
 public abstract class Component {
+
     protected int x;
     protected int y;
     protected int width;
     protected int height;
-    protected int backgroundColor = -1; // 0x0C0C0C
+    protected int backgroundColor = -1;
     protected int foregroundColor = 0xCCCCCC;
     protected boolean visible = true;
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Tabs extends Component {
     private List<String> tabTitles = new ArrayList<>();
-    private List<Container> tabPanels = new ArrayList<>();
+    private List<Container> tabContainer = new ArrayList<>();
     private int selectedIndex = 0;
     private int activeTabBg = 0x666666;
     private int activeTabFg = 0xFFFFFF;
@@ -20,53 +20,13 @@ public class Tabs extends Component {
         super(x, y, width, height);
     }
 
-    public void setActiveTabBg(int color) {
-        this.activeTabBg = color;
-    }
-
-    public void setActiveTabFg(int color) {
-        this.activeTabFg = color;
-    }
-
-    public void setInactiveTabBg(int color) {
-        this.inactiveTabBg = color;
-    }
-
-    public void setInactiveTabFg(int color) {
-        this.inactiveTabFg = color;
-    }
-
-    public void addTab(String title, Container panel) {
+    public void addTab(String title, Container container) {
         tabTitles.add(title);
-        panel.setX(this.x);
-        panel.setY(this.y + 1); // Below tab header
-        panel.setWidth(this.width);
-        panel.setHeight(this.height - 1);
-        tabPanels.add(panel);
-    }
-
-    @Override
-    public void setX(int x) {
-        super.setX(x);
-        for (Container p : tabPanels) p.setX(x);
-    }
-
-    @Override
-    public void setY(int y) {
-        super.setY(y);
-        for (Container p : tabPanels) p.setY(y + 1);
-    }
-
-    @Override
-    public void setWidth(int width) {
-        super.setWidth(width);
-        for (Container p : tabPanels) p.setWidth(width);
-    }
-
-    @Override
-    public void setHeight(int height) {
-        super.setHeight(height);
-        for (Container p : tabPanels) p.setHeight(height - 1);
+        container.setX(this.x);
+        container.setY(this.y + 1); // Below tab header
+        container.setWidth(this.width);
+        container.setHeight(this.height - 1);
+        tabContainer.add(container);
     }
 
     @Override
@@ -75,7 +35,7 @@ public class Tabs extends Component {
 
         // Draw tab headers
         int currentX = x;
-        int TAB_WIDTH = 14;
+        int TAB_WIDTH = 20;
         for (int i = 0; i < tabTitles.size(); i++) {
             String title = tabTitles.get(i);
             int pad = TAB_WIDTH - title.length();
@@ -95,44 +55,52 @@ public class Tabs extends Component {
         }
 
         // Render selected panel
-        if (selectedIndex >= 0 && selectedIndex < tabPanels.size()) {
-            tabPanels.get(selectedIndex).render(scene);
+        if (selectedIndex >= 0 && selectedIndex < tabContainer.size()) {
+            tabContainer.get(selectedIndex).render(scene);
         }
     }
 
-//    @Override
-//    public boolean handleMouseClick(int cellX, int cellY, boolean isPressed) {
-//        if (cellY == y && isPressed) { // Clicked on header row
-//            int currentX = x;
-//            int TAB_WIDTH = 14;
-//            for (int i = 0; i < tabTitles.size(); i++) {
-//                if (cellX >= currentX && cellX < currentX + TAB_WIDTH) {
-//                    selectedIndex = i;
-//                    return true;
-//                }
-//                currentX += TAB_WIDTH;
-//            }
-//        } else if (selectedIndex >= 0 && selectedIndex < tabPanels.size()) {
-//            return tabPanels.get(selectedIndex).handleMouseClick(cellX, cellY, isPressed);
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public void handleMouseDrag(int cellX, int cellY) {
-//        if (selectedIndex >= 0 && selectedIndex < tabPanels.size()) {
-//            tabPanels.get(selectedIndex).handleMouseDrag(cellX, cellY);
-//        }
-//    }
-//
-//    @Override
-//    public void handleMouseMove(int cellX, int cellY) {
-//        if (selectedIndex >= 0 && selectedIndex < tabPanels.size()) {
-//            tabPanels.get(selectedIndex).handleMouseMove(cellX, cellY);
-//        }
-//    }
-
     public int getSelectedIndex() {
         return selectedIndex;
+    }
+
+    @Override
+    public void setX(int x) {
+        super.setX(x);
+        for (Container p : tabContainer) p.setX(x);
+    }
+
+    @Override
+    public void setY(int y) {
+        super.setY(y);
+        for (Container p : tabContainer) p.setY(y + 1);
+    }
+
+    @Override
+    public void setWidth(int width) {
+        super.setWidth(width);
+        for (Container p : tabContainer) p.setWidth(width);
+    }
+
+    @Override
+    public void setHeight(int height) {
+        super.setHeight(height);
+        for (Container p : tabContainer) p.setHeight(height - 1);
+    }
+
+    public void setActiveTabBackgroundColor(int color) {
+        this.activeTabBg = color;
+    }
+
+    public void setActiveTabForeground(int color) {
+        this.activeTabFg = color;
+    }
+
+    public void setInactiveTabBg(int color) {
+        this.inactiveTabBg = color;
+    }
+
+    public void setInactiveTabFg(int color) {
+        this.inactiveTabFg = color;
     }
 }

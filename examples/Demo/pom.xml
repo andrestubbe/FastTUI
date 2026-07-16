@@ -40,6 +40,21 @@
             <artifactId>FastTUI</artifactId>
             <version>0.1.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.andrestubbe</groupId>
+            <artifactId>FastANSI</artifactId>
+            <version>0.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.andrestubbe</groupId>
+            <artifactId>fastascii</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.andrestubbe</groupId>
+            <artifactId>fastfileindex</artifactId>
+            <version>0.1.0</version>
+        </dependency>
         
         <!-- ======================================================== -->
         <!-- PRODUCTION MODE (JitPack)                                -->

@@ -3,6 +3,7 @@ package fasttui.component;
 import fastterminal.FastTerminalScene;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Container extends Component {
@@ -20,6 +21,18 @@ public class Container extends Component {
             children.add(child);
         }
     }
+
+    public void addAll(Component[] comps) {
+        for (Component child : comps) {
+            if (child != null) {
+                child.setX(this.x + child.getX());
+                child.setY(this.y + child.getY());
+                children.add(child);
+            }
+        }
+    }
+
+
 
     @Override
     public void render(FastTerminalScene scene) {

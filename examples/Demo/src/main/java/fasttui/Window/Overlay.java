@@ -9,7 +9,7 @@ import fastterminal.FastTerminal;
 import fastterminal.FastTerminalRenderer;
 import fastterminal.FastTerminalScene;
 import fasttui.behaviour.EventDispatcher;
-import fasttui.composable.FileNavigator;
+import fasttui.composable.todo.FileNavigator;
 
 /**
  * @class TerminalOverlay

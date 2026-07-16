@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class Control extends Container {
+
     protected List<Behaviour> behaviors = null;
 
     public Control(int x, int y, int width, int height) {

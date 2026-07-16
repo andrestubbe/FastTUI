@@ -3,7 +3,7 @@ package fasttui.component;
 import fastterminal.FastTerminalScene;
 import fasttui.layout.TextLayoutEngine;
 
-public class Text extends Component {
+public class TextArea extends Component {
 
     private final TextLayoutEngine layoutEngine = new TextLayoutEngine();
 
@@ -14,7 +14,7 @@ public class Text extends Component {
     private String lastText = null;
     private int lastWidth = -1;
 
-    public Text(int x, int y, int width, int height) {
+    public TextArea(int x, int y, int width, int height) {
         super(x, y, width, height);
         this.foregroundColor = 0xFFFFFF;
         this.backgroundColor = -1;

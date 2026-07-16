@@ -1,4 +1,4 @@
-package fasttui.composable.todo;
+package fasttui.composable;
 
 import fastterminal.FastTerminalScene;
 

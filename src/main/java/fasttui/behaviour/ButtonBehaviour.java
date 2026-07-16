@@ -4,9 +4,15 @@ import fasttui.component.Component;
 import fasttui.component.Control;
 
 public class ButtonBehaviour implements Behaviour {
+
+    public enum State {
+        NORMAL,
+        HOVERED,
+        PRESSED
+    }
+
     private final Runnable action;
-    private boolean isPressed = false;
-    private boolean isHovered = false;
+    private State state = State.NORMAL;
 
     public ButtonBehaviour(Runnable action) {
         this.action = action;
@@ -14,35 +20,28 @@ public class ButtonBehaviour implements Behaviour {
 
     @Override
     public void onMousePressed(Component target, int mx, int my) {
-        isPressed = true;
+        state = State.PRESSED;
     }
 
     @Override
     public void onMouseReleased(Component target, int mx, int my) {
-        if (isPressed && target instanceof Control && ((Control) target).contains(mx, my)) {
-            if (action != null) {
-                action.run();
-            }
+        if (state == State.PRESSED && target instanceof Control && ((Control) target).contains(mx, my)) {
+            if (action != null) action.run();
         }
-        isPressed = false;
+        state = State.NORMAL;
     }
 
     @Override
     public void onMouseEnter(Component target) {
-        isHovered = true;
+        if (state != State.PRESSED) state = State.HOVERED;
     }
 
     @Override
     public void onMouseExit(Component target) {
-        isHovered = false;
-        isPressed = false;
+        state = State.NORMAL;
     }
 
-    public boolean isPressed() {
-        return isPressed;
-    }
-
-    public boolean isHovered() {
-        return isHovered;
+    public State getState() {
+        return state;
     }
 }

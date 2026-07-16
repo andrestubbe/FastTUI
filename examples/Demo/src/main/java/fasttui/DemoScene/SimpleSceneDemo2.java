@@ -9,18 +9,16 @@ import fastterminal.FastTerminal;
 import fastterminal.FastTerminalRenderer;
 import fastterminal.FastTerminalScene;
 import fasttui.behaviour.EventDispatcher;
-import fasttui.component.BorderStyle;
-import fasttui.component.Box;
-import fasttui.component.Container;
-import fasttui.component.Text;
+import fasttui.component.*;
+import fasttui.composable.BarVertical;
 import fasttui.composable.Button;
 import fasttui.composable.Table;
-import fasttui.composable.todo.Dropdown;
+import fasttui.composable.Dropdown;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class SimpleSceneDemo {
+public class SimpleSceneDemo2 {
     private static volatile boolean isRunning = true;
 
     public static void main(String[] args) {
@@ -39,24 +37,62 @@ public class SimpleSceneDemo {
         Container container = new Container(0, 0, cols, rows);
 
         // Commented out as requested:
-        // setupFloatingBox(container);
+//         setupFloatingBox(container);
 
         // Render Table:
-        setupTable(container);
+//        setupTable(container);
 
-        // Interactive rendering loop
+//        int percent = 0;
+//        ProgressBar progressBar = new ProgressBar(0, 0, 100, 0xFFFFFF, 0xCCCCCC);
+//        container.add(progressBar);
+//        Graph graph = new Graph(0xFFFFFF);
+
+        setupGraphVertical(container);
+
+
+
         while (isRunning) {
             scene.clear();
             container.render(scene);
             renderer.render();
             try {
-                Thread.sleep(16); // ~60fps
+                Thread.sleep(16);
             } catch (InterruptedException ignored) {
             }
         }
 
         System.exit(0);
     }
+
+    private static void setupGraphVertical(Container container) {
+        int percent = 50;
+        BarVertical[] verticals = new BarVertical[120];
+        for (int x = 0; x < 120; x++) {
+            percent += Math.random() * 10 - 4;
+            verticals[x] = new BarVertical(x, 0, 30, 0xFFFFFF, 0x000000);
+            verticals[x].setPercent(percent);
+            container.add(verticals[x]);
+        }
+
+        FastKeyboard keyboard = getKeyboardESC();
+        AnsiMouse mouse = getAnsiMouse(container);
+        setupShutdownHook(keyboard, mouse);
+    }
+    private static void setup(Container container) {
+        int percent = 50;
+        BarVertical[] verticals = new BarVertical[120];
+        for (int x = 0; x < 120; x++) {
+            percent += Math.random() * 10 - 4;
+            verticals[x] = new BarVertical(x, 0, 30, 0xFFFFFF, 0x000000);
+            verticals[x].setPercent(percent);
+            container.add(verticals[x]);
+        }
+
+        FastKeyboard keyboard = getKeyboardESC();
+        AnsiMouse mouse = getAnsiMouse(container);
+        setupShutdownHook(keyboard, mouse);
+    }
+
 
     private static void setupFloatingBox(Container container) {
         int cols = container.getWidth();
@@ -70,15 +106,15 @@ public class SimpleSceneDemo {
         box.setBorderStyle(BorderStyle.ROUNDED);
         container.add(box);
 
-        Text label = new Text(2, 0, boxW - 4, 1);
+        TextArea label = new TextArea(2, 0, boxW - 4, 1);
         label.setText("Selection");
         box.add(label);
 
-        Text prompt = new Text(2, 2, boxW - 4, 1);
+        TextArea prompt = new TextArea(2, 2, boxW - 4, 1);
         prompt.setText("Choose an AI model and click Select:");
         box.add(prompt);
 
-        Text status = new Text(2, 7, boxW - 4, 1);
+        TextArea status = new TextArea(2, 7, boxW - 4, 1);
         status.setText("Status: Waiting for selection...");
         box.add(status);
 
@@ -132,11 +168,8 @@ public class SimpleSceneDemo {
             }
         });
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.print(FastANSI.ALT_BUFFER_OFF + FastANSI.CURSOR_SHOW + FastANSI.RESET);
-            keyboard.stopListening();
-            mouse.close();
-        }));
+        setupShutdownHook(keyboard, mouse);
+
     }
 
     private static void setupTable(Container container) {
@@ -170,10 +203,10 @@ public class SimpleSceneDemo {
         int tableY = 2;
 
         Table table = new Table(tableX, tableY, tableW, tableH, rows, cols, columnWidths);
-        table.setBorderStyle(BorderStyle.NONE); // No dividers (|)
+        table.setBorderStyle(BorderStyle.ROUNDED); // No dividers (|)
 
         // Add a local status label just for the table demo
-        Text tableStatus = new Text(5, container.getHeight() - 3, container.getWidth() - 10, 1);
+        TextArea tableStatus = new TextArea(5, container.getHeight() - 3, container.getWidth() - 10, 1);
         tableStatus.setText("Table Demo. Click any 'Action' button...");
         container.add(tableStatus);
 
@@ -181,7 +214,7 @@ public class SimpleSceneDemo {
         for (int r = 0; r < rows; r++) {
             // Passive cells (Text)
             for (int c = 0; c < 3; c++) {
-                Text txtCell = new Text(0, 0, columnWidths[c], 1);
+                TextArea txtCell = new TextArea(0, 0, columnWidths[c], 1);
                 txtCell.setText(data[r][c]);
                 txtCell.setPaddingX(1);
                 table.setCell(r, c, txtCell);
@@ -197,14 +230,14 @@ public class SimpleSceneDemo {
 
         container.add(table);
 
-        // Setup local events for Table
-        FastKeyboard keyboard = new FastKeyboardImpl();
-        keyboard.startListening((h, vKey, mc, pressed, e0, ts, ch) -> {
-            if (pressed && vKey == 0x1B) { // ESC to exit
-                isRunning = false;
-            }
-        });
+        final FastKeyboard keyboard = getKeyboardESC();
+        final AnsiMouse mouse = getAnsiMouse(container);
 
+        setupShutdownHook(keyboard, mouse);
+
+    }
+
+    private static AnsiMouse getAnsiMouse(Container container) {
         final int[] mouseCell = {-1, -1};
         AnsiMouse mouse = AnsiMouse.open(new FastMouseListener() {
             @Override
@@ -226,7 +259,20 @@ public class SimpleSceneDemo {
                 // No mouse wheel actions needed for table
             }
         });
+        return mouse;
+    }
 
+    private static FastKeyboard getKeyboardESC() {
+        FastKeyboard keyboard = new FastKeyboardImpl();
+        keyboard.startListening((h, vKey, mc, pressed, e0, ts, ch) -> {
+            if (pressed && vKey == 0x1B) { // ESC to exit
+                isRunning = false;
+            }
+        });
+        return keyboard;
+    }
+
+    private static void setupShutdownHook(FastKeyboard keyboard, AnsiMouse mouse) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.print(FastANSI.ALT_BUFFER_OFF + FastANSI.CURSOR_SHOW + FastANSI.RESET);
             keyboard.stopListening();

@@ -3,7 +3,7 @@ package fasttui.DemoStream;
 import fastterminal.FastTerminalScene;
 import fastterminal.FastTerminalSceneStreamer;
 import fasttui.component.Box;
-import fasttui.component.Text;
+import fasttui.component.TextArea;
 import fasttui.component.BorderStyle;
 
 public class SimpleStreamDemo {
@@ -19,14 +19,14 @@ public class SimpleStreamDemo {
         box.setBackgroundColor(0x1a1b26); // Background Color (Tokyo Night BG)
 
         // Add the label (centered on the top border)
-        Text label = new Text(2, 0, width - 4, 1);
+        TextArea label = new TextArea(2, 0, width - 4, 1);
         label.setText(" Tokyo Night ");
         label.setForegroundColor(0xf7768e); // Label Color (Tokyo Night Red)
         label.setBackgroundColor(0x1a1b26);
         box.add(label);
 
         // Add the content text (with 1-line vertical padding)
-        Text content = new Text(1, 1, width - 2, height - 2);
+        TextArea content = new TextArea(1, 1, width - 2, height - 2);
         content.setPaddingX(1);
         content.setPaddingY(1);
         content.setText("Welcome to the new Box!\nLabel and text are composed.");
