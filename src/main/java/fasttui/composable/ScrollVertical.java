@@ -8,9 +8,9 @@ public class ScrollVertical extends Component {
     private int foregroundColor;
     private int backgroundColor;
 
-    private int totalItems;
-    private int visibleItems;
-    private int scrollOffset;
+    private int totalItems = 1;
+    private int visibleItems = 1;
+    private int scrollOffset = 0;
 
     public ScrollVertical(int x, int y, int height,
                           int foregroundColor, int backgroundColor) {
@@ -22,7 +22,8 @@ public class ScrollVertical extends Component {
     public void update(int totalItems, int visibleItems, int scrollOffset) {
         this.totalItems = Math.max(1, totalItems);
         this.visibleItems = Math.max(1, visibleItems);
-        this.scrollOffset = Math.max(0, Math.min(scrollOffset, totalItems - visibleItems));
+        int maxOffset = Math.max(0, totalItems - visibleItems);
+        this.scrollOffset = Math.max(0, Math.min(scrollOffset, maxOffset));
     }
 
     @Override
@@ -34,18 +35,37 @@ public class ScrollVertical extends Component {
             scene.writeCell(x, y + py, ' ', backgroundColor, backgroundColor);
         }
 
-        // Compute thumb size
-        int thumbSize = Math.max(1, (visibleItems * height) / totalItems);
+        // Half-pixel resolution
+        int totalHalf = height * 2;
 
-        // Compute thumb position
+        // Thumb size in half-pixels
+        int thumbSizeHalf = Math.max(1, (visibleItems * totalHalf) / totalItems);
+
         int maxOffset = totalItems - visibleItems;
-        int thumbPos = (maxOffset == 0)
-                ? 0
-                : (scrollOffset * (height - thumbSize)) / maxOffset;
 
-        // Draw thumb
-        for (int py = 0; py < thumbSize; py++) {
-            scene.writeCell(x, y + thumbPos + py, '█', foregroundColor, backgroundColor);
+        // Thumb position in half-pixels
+        int thumbPosHalf = (maxOffset == 0)
+                ? 0
+                : (scrollOffset * (totalHalf - thumbSizeHalf)) / maxOffset;
+
+        int thumbEndHalf = thumbPosHalf + thumbSizeHalf;
+
+        // Draw thumb using half-blocks
+        for (int cellY = 0; cellY < height; cellY++) {
+
+            int cellTop = cellY * 2;
+            int cellBottom = cellTop + 1;
+
+            boolean topFilled = (cellTop >= thumbPosHalf && cellTop < thumbEndHalf);
+            boolean bottomFilled = (cellBottom >= thumbPosHalf && cellBottom < thumbEndHalf);
+
+            char ch;
+            if (topFilled && bottomFilled) ch = '█';
+            else if (topFilled) ch = '▀';
+            else if (bottomFilled) ch = '▄';
+            else ch = ' ';
+
+            scene.writeCell(x, y + cellY, ch, foregroundColor, backgroundColor);
         }
     }
 }
