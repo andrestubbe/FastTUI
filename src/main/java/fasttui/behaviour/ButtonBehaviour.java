@@ -11,34 +11,59 @@ public class ButtonBehaviour implements Behaviour {
         PRESSED
     }
 
+    public interface Listener {
+        void onStateChanged(State newState);
+    }
+
     private final Runnable action;
     private State state = State.NORMAL;
+
+    private Listener listener;
 
     public ButtonBehaviour(Runnable action) {
         this.action = action;
     }
 
-    @Override
-    public void onMousePressed(Component target, int mx, int my) {
-        state = State.PRESSED;
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 
-    @Override
-    public void onMouseReleased(Component target, int mx, int my) {
-        if (state == State.PRESSED && target instanceof Control && ((Control) target).contains(mx, my)) {
-            if (action != null) action.run();
+    private void updateState(State newState) {
+        if (this.state != newState) {
+            this.state = newState;
+            if (listener != null) {
+                listener.onStateChanged(newState);
+            }
         }
-        state = State.NORMAL;
     }
 
     @Override
-    public void onMouseEnter(Component target) {
-        if (state != State.PRESSED) state = State.HOVERED;
+    public void onMousePressed(Component component, int mx, int my) {
+        updateState(State.PRESSED);
     }
 
     @Override
-    public void onMouseExit(Component target) {
-        state = State.NORMAL;
+    public void onMouseReleased(Component component, int mx, int my) {
+        boolean inside = component instanceof Control &&
+                ((Control) component).contains(mx, my);
+
+        if (state == State.PRESSED && inside && action != null) {
+            action.run();
+        }
+
+        updateState(State.NORMAL);
+    }
+
+    @Override
+    public void onMouseEnter(Component component) {
+        if (state != State.PRESSED) {
+            updateState(State.HOVERED);
+        }
+    }
+
+    @Override
+    public void onMouseExit(Component component) {
+        updateState(State.NORMAL);
     }
 
     public State getState() {

@@ -49,10 +49,10 @@ public class Window extends Container {
         this.resizeButton = new Button(width - 1, height - 1, 1, 1, "◢", null);
         this.resizeButton.setBackgroundNormal(bgColor);
         this.resizeButton.setBackgroundHover(0xE2E8F0);
-        this.resizeButton.setBackgroundActive(0x94A3B8);
+        this.resizeButton.setBackgroundPressed(0x94A3B8);
         this.resizeButton.setForegroundNormal(0x94A3B8);
         this.resizeButton.setForegroundHover(0x0F172A);
-        this.resizeButton.setForegroundActive(0x0F172A);
+        this.resizeButton.setForegroundPressed(0x0F172A);
         this.resizeButton.setVisible(hasResizeButton);
         add(this.resizeButton);
 
@@ -61,8 +61,8 @@ public class Window extends Container {
         this.closeButton.setForegroundNormal(0xFFFFFF);
         this.closeButton.setBackgroundHover(0xDC2626);
         this.closeButton.setForegroundHover(0xFFFFFF);
-        this.closeButton.setBackgroundActive(0x991B1B);
-        this.closeButton.setForegroundActive(0xFFFFFF);
+        this.closeButton.setBackgroundPressed(0x991B1B);
+        this.closeButton.setForegroundPressed(0xFFFFFF);
         this.closeButton.setVisible(showWindowButtons && hasHeaderBar);
         add(this.closeButton);
 
@@ -71,8 +71,8 @@ public class Window extends Container {
         this.minimizeButton.setForegroundNormal(0x000000);
         this.minimizeButton.setBackgroundHover(0xC9B55F);
         this.minimizeButton.setForegroundHover(0x000000);
-        this.minimizeButton.setBackgroundActive(0xB09F48);
-        this.minimizeButton.setForegroundActive(0x000000);
+        this.minimizeButton.setBackgroundPressed(0xB09F48);
+        this.minimizeButton.setForegroundPressed(0x000000);
         this.minimizeButton.setVisible(showWindowButtons && hasHeaderBar);
         add(this.minimizeButton);
     }

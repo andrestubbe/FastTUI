@@ -3,7 +3,6 @@ package fasttui.component;
 import fastterminal.FastTerminalScene;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Container extends Component {
@@ -32,7 +31,21 @@ public class Container extends Component {
         }
     }
 
+    public boolean removeChild(Component child) {
+        if (child == null) return false;
+        return children.remove(child);
+    }
 
+    public void removeChildren(Component[] comps) {
+        if (comps == null || comps.length == 0) return;
+        for (Component c : comps) {
+            children.remove(c);
+        }
+    }
+
+    public void removeAll() {
+        children.clear();
+    }
 
     @Override
     public void render(FastTerminalScene scene) {

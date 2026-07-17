@@ -67,25 +67,25 @@ public class TreeView extends Control {
 
     private static final HashMap<String, String> ICONS = new HashMap<>();
     static {
-        ICONS.put("java", "☕");
-        ICONS.put("js", "📜");
-        ICONS.put("ts", "📘");
-        ICONS.put("py", "🐍");
-        ICONS.put("md", "📝");
-        ICONS.put("txt", "📄");
-        ICONS.put("json", "📋");
-        ICONS.put("xml", "📋");
-        ICONS.put("html", "🌐");
-        ICONS.put("css", "🎨");
-        ICONS.put("png", "🖼️");
-        ICONS.put("jpg", "🖼️");
-        ICONS.put("jpeg", "🖼️");
-        ICONS.put("gif", "🖼️");
-        ICONS.put("svg", "🖼️");
-        ICONS.put("pdf", "📕");
-        ICONS.put("zip", "📦");
-        ICONS.put("jar", "📦");
-        ICONS.put("class", "📦");
+        ICONS.put("java", "[J]");
+        ICONS.put("js", "[S]");
+        ICONS.put("ts", "[T]");
+        ICONS.put("py", "[P]");
+        ICONS.put("md", "[M]");
+        ICONS.put("txt", "[T]");
+        ICONS.put("json", "[J]");
+        ICONS.put("xml", "[X]");
+        ICONS.put("html", "[H]");
+        ICONS.put("css", "[C]");
+        ICONS.put("png", "[I]");
+        ICONS.put("jpg", "[I]");
+        ICONS.put("jpeg", "[I]");
+        ICONS.put("gif", "[I]");
+        ICONS.put("svg", "[I]");
+        ICONS.put("pdf", "[P]");
+        ICONS.put("zip", "[Z]");
+        ICONS.put("jar", "[Z]");
+        ICONS.put("class", "[Z]");
     }
 
     private TreeSelectionListener selectionListener;
@@ -96,7 +96,55 @@ public class TreeView extends Control {
 
     public void setRoot(File rootFile) {
         this.root = buildTree(rootFile, 0);
+        root.setExpanded(true); // Auto-expand root
         refreshVisibleNodes();
+    }
+
+    public void expandPath(File targetPath) {
+        if (root == null || targetPath == null) return;
+
+        String targetPathStr = targetPath.getAbsolutePath();
+        TreeNode targetNode = findNode(root, targetPathStr);
+
+        if (targetNode != null) {
+            expandToNode(root, targetNode);
+            refreshVisibleNodes();
+        }
+    }
+
+    private TreeNode findNode(TreeNode node, String targetPath) {
+        if (node.getFile().getAbsolutePath().equals(targetPath)) {
+            return node;
+        }
+
+        if (node.isDirectory()) {
+            for (TreeNode child : node.getChildren()) {
+                TreeNode found = findNode(child, targetPath);
+                if (found != null) return found;
+            }
+        }
+
+        return null;
+    }
+
+    private void expandToNode(TreeNode current, TreeNode target) {
+        if (current == target) return;
+
+        if (current.isDirectory()) {
+            for (TreeNode child : current.getChildren()) {
+                if (isAncestor(child, target)) {
+                    current.setExpanded(true);
+                    expandToNode(child, target);
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean isAncestor(TreeNode ancestor, TreeNode descendant) {
+        String ancestorPath = ancestor.getFile().getAbsolutePath();
+        String descendantPath = descendant.getFile().getAbsolutePath();
+        return descendantPath.startsWith(ancestorPath);
     }
 
     private TreeNode buildTree(File file, int depth) {
@@ -135,6 +183,7 @@ public class TreeView extends Control {
     @Override
     public void render(FastTerminalScene scene) {
         if (!visible) return;
+        if (visibleNodes.isEmpty()) return;
 
         int visibleHeight = height;
         int startIndex = Math.min(scrollOffset, visibleNodes.size() - 1);
@@ -181,7 +230,7 @@ public class TreeView extends Control {
 
     private String getIcon(TreeNode node) {
         if (node.isDirectory()) {
-            return node.isExpanded() ? "📂 " : "📁 ";
+            return node.isExpanded() ? "[+] " : "[ ] ";
         }
         File file = node.getFile();
         String name = file.getName();
@@ -191,7 +240,7 @@ public class TreeView extends Control {
             String icon = ICONS.get(ext);
             if (icon != null) return icon + " ";
         }
-        return "📄 ";
+        return "[ ] ";
     }
 
     public void selectNext() {

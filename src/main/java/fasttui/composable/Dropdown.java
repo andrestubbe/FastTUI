@@ -22,15 +22,19 @@ public class Dropdown extends Container {
     private Button headerBtn;
     private final List<Button> optionBtns = new ArrayList<>();
 
-    private int headerBgNormal = -1;
-    private int headerFgNormal = 0xCCCCCC;
-    private int headerBgHover = 0xCCCCCC;
-    private int headerFgHover = 0x0C0C0C;
+    private int headerBackgroundNormal = -1;
+    private int headerForegroundNormal = 0xCCCCCC;
+    private int headerBackgroundHover = 0xCCCCCC;
+    private int headerForegroundHover = 0x0C0C0C;
+    private int headerBackgroundPressed = 0xCCCCCC;
+    private int headerForegroundPressed = 0x0C0C0C;
 
-    private int optionBgNormal = 0x0C0C0C;
-    private int optionFgNormal = 0xCCCCCC;
-    private int optionBgHover = 0xCCCCCC;
-    private int optionFgHover = 0x0C0C0C;
+    private int optionBackgroundNormal = 0x0C0C0C;
+    private int optionForegroundNormal = 0xCCCCCC;
+    private int optionBackgroundHover = 0xCCCCCC;
+    private int optionForegroundHover = 0x0C0C0C;
+    private int optionBackgroundPressed = 0xCCCCCC;
+    private int optionForegroundPressed = 0x0C0C0C;
 
     private int maxVisibleItems = 6;
     private int scrollOffset = 0;
@@ -56,19 +60,31 @@ public class Dropdown extends Container {
         rebuildComponents();
     }
 
-    public void setHeaderColors(int bgNormal, int fgNormal, int bgHover, int fgHover) {
-        this.headerBgNormal = bgNormal;
-        this.headerFgNormal = fgNormal;
-        this.headerBgHover = bgHover;
-        this.headerFgHover = fgHover;
+    public void setHeaderColors(
+            int backgroundNormal, int foregroundNormal,
+            int backgroundHover, int foregroundHover,
+            int backgroundPressed, int foregroundPressed
+    ) {
+        this.headerBackgroundNormal = backgroundNormal;
+        this.headerForegroundNormal = foregroundNormal;
+        this.headerBackgroundHover = backgroundHover;
+        this.headerForegroundHover = foregroundHover;
+        this.headerBackgroundPressed = backgroundPressed;
+        this.headerForegroundPressed = foregroundPressed;
         rebuildComponents();
     }
 
-    public void setOptionColors(int bgNormal, int fgNormal, int bgHover, int fgHover) {
-        this.optionBgNormal = bgNormal;
-        this.optionFgNormal = fgNormal;
-        this.optionBgHover = bgHover;
-        this.optionFgHover = fgHover;
+    public void setOptionColors(
+            int backgroundNormal, int foregroundNormal,
+            int backgroundHover, int foregroundHover,
+            int backgroundPressed, int foregroundPressed
+    ) {
+        this.optionBackgroundNormal = backgroundNormal;
+        this.optionForegroundNormal = foregroundNormal;
+        this.optionBackgroundHover = backgroundHover;
+        this.optionForegroundHover = foregroundHover;
+        this.optionBackgroundPressed = backgroundPressed;
+        this.optionForegroundPressed = foregroundPressed;
         rebuildComponents();
     }
 
@@ -98,10 +114,12 @@ public class Dropdown extends Container {
 
         headerBtn = new Button(0, 0, width, headerHeight, headerText, this::toggleExpanded);
         headerBtn.setBorderStyle(headerBorderStyle);
-        headerBtn.setBackgroundNormal(headerBgNormal);
-        headerBtn.setForegroundNormal(headerFgNormal);
-        headerBtn.setBackgroundHover(headerBgHover);
-        headerBtn.setForegroundHover(headerFgHover);
+        headerBtn.setBackgroundNormal(headerBackgroundNormal);
+        headerBtn.setForegroundNormal(headerForegroundNormal);
+        headerBtn.setBackgroundHover(headerBackgroundHover);
+        headerBtn.setForegroundHover(headerForegroundHover);
+        headerBtn.setBackgroundPressed(headerBackgroundPressed);
+        headerBtn.setForegroundPressed(headerForegroundPressed);
         this.add(headerBtn);
 
         // Options
@@ -125,10 +143,10 @@ public class Dropdown extends Container {
                             () -> selectItem(finalIdx)
                     );
 
-                    optBtn.setBackgroundNormal(optionBgNormal);
-                    optBtn.setForegroundNormal(optionFgNormal);
-                    optBtn.setBackgroundHover(optionBgHover);
-                    optBtn.setForegroundHover(optionFgHover);
+                    optBtn.setBackgroundNormal(optionBackgroundNormal);
+                    optBtn.setForegroundNormal(optionForegroundNormal);
+                    optBtn.setBackgroundHover(optionBackgroundHover);
+                    optBtn.setForegroundHover(optionForegroundHover);
                     optBtn.setAlignment(Button.Alignment.LEFT);
 
                     this.add(optBtn);
@@ -151,10 +169,10 @@ public class Dropdown extends Container {
                             () -> selectItem(finalIdx)
                     );
 
-                    optBtn.setBackgroundNormal(optionBgNormal);
-                    optBtn.setForegroundNormal(optionFgNormal);
-                    optBtn.setBackgroundHover(optionBgHover);
-                    optBtn.setForegroundHover(optionFgHover);
+                    optBtn.setBackgroundNormal(optionBackgroundNormal);
+                    optBtn.setForegroundNormal(optionForegroundNormal);
+                    optBtn.setBackgroundHover(optionBackgroundHover);
+                    optBtn.setForegroundHover(optionForegroundHover);
                     optBtn.setAlignment(Button.Alignment.LEFT);
 
                     this.add(optBtn);

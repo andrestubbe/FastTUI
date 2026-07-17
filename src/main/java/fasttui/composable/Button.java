@@ -17,11 +17,11 @@ public class Button extends Control {
 
     private int backgroundNormal = -1;
     private int backgroundHover = 0xCCCCCC;
-    private int backgroundActive = 0x767676;
+    private int backgroundPressed = 0x767676;
 
     private int foregroundNormal = 0xCCCCCC;
     private int foregroundHover = 0x0C0C0C;
-    private int foregroundActive = 0x0C0C0C;
+    private int foregroundPressed = 0x0C0C0C;
 
     private Alignment alignment = Alignment.CENTER;
 
@@ -33,7 +33,7 @@ public class Button extends Control {
         this.text = text;
 
         this.behaviour = new ButtonBehaviour(action);
-        this.addBehavior(behaviour);
+        this.addBehavior(this.behaviour);
 
         this.box = new Box(0, 0, width, height);
         this.box.setBorderStyle(BorderStyle.NONE);
@@ -44,6 +44,39 @@ public class Button extends Control {
         this.add(label);
 
         updateChildLayout();
+    }
+
+    @Override
+    public void render(FastTerminalScene scene) {
+        if (!visible) return;
+
+        State state = behaviour.getState();
+
+        int bg;
+        int fg;
+
+        switch (state) {
+            case PRESSED:
+                bg = backgroundPressed;
+                fg = foregroundPressed;
+                break;
+            case HOVERED:
+                bg = backgroundHover;
+                fg = foregroundHover;
+                break;
+            case NORMAL:
+            default:
+                bg = backgroundNormal;
+                fg = foregroundNormal;
+                break;
+        }
+
+        box.setBackgroundColor(bg);
+        label.setBackgroundColor(bg);
+        label.setForegroundColor(fg);
+
+        updateChildLayout();
+        super.render(scene);
     }
 
     private void updateChildLayout() {
@@ -72,39 +105,6 @@ public class Button extends Control {
         label.setWidth(Math.min(textW, maxTextW));
     }
 
-    @Override
-    public void render(FastTerminalScene scene) {
-        if (!visible) return;
-
-        State state = behaviour.getState();
-
-        int bg;
-        int fg;
-
-        switch (state) {
-            case PRESSED:
-                bg = backgroundActive;
-                fg = foregroundActive;
-                break;
-            case HOVERED:
-                bg = backgroundHover;
-                fg = foregroundHover;
-                break;
-            case NORMAL:
-            default:
-                bg = backgroundNormal;
-                fg = foregroundNormal;
-                break;
-        }
-
-        box.setBackgroundColor(bg);
-        label.setBackgroundColor(bg);
-        label.setForegroundColor(fg);
-
-        updateChildLayout();
-        super.render(scene);
-    }
-
     public void setText(String text) {
         this.text = text;
     }
@@ -121,8 +121,8 @@ public class Button extends Control {
         backgroundHover = c;
     }
 
-    public void setBackgroundActive(int c) {
-        backgroundActive = c;
+    public void setBackgroundPressed(int c) {
+        backgroundPressed = c;
     }
 
     public void setForegroundNormal(int c) {
@@ -133,8 +133,8 @@ public class Button extends Control {
         foregroundHover = c;
     }
 
-    public void setForegroundActive(int c) {
-        foregroundActive = c;
+    public void setForegroundPressed(int c) {
+        foregroundPressed = c;
     }
 
     public void setBorderStyle(BorderStyle style) {
