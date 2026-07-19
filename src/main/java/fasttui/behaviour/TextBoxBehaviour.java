@@ -58,6 +58,20 @@ public class TextBoxBehaviour implements Behaviour {
     }
 
     @Override
+    public void onMouseEnter(Component target) {
+        if (target instanceof TextInput) {
+            ((TextInput) target).setHovered(true);
+        }
+    }
+
+    @Override
+    public void onMouseExit(Component target) {
+        if (target instanceof TextInput) {
+            ((TextInput) target).setHovered(false);
+        }
+    }
+
+    @Override
     public void onKeyPressed(Component target, int vKey, char keyChar) {
         if (target instanceof TextInput) {
             handleKey((TextInput) target, vKey, keyChar, true);
@@ -113,7 +127,7 @@ public class TextBoxBehaviour implements Behaviour {
 
         if (box instanceof MultilineTextBox) {
             MultilineTextBox mbox = (MultilineTextBox) box;
-            MultilineTextBox.LayoutResult layout = mbox.doLayout();
+            fasttui.layout.MultilineLayoutEngine.LayoutResult layout = mbox.doLayout();
             int cursor = mbox.getCursorPosition();
             boolean up = vKey == Keys.UP;
 

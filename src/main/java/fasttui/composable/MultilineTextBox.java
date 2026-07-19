@@ -4,112 +4,59 @@ import fastterminal.FastTerminalScene;
 import fasttui.behaviour.Behaviour;
 import fasttui.behaviour.TextBoxBehaviour;
 import fasttui.component.Control;
+import fasttui.layout.MultilineLayoutEngine;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MultilineTextBox extends Control implements TextInput {
-
-    public static final int COLOR_DEFAULT_FG = 0xFFFFFF;
-    public static final int COLOR_DEFAULT_BG = -2;
-    public static final int COLOR_FOCUSED_BG = 0x27272A;
-    public static final int COLOR_SELECTION_BG = 0x1D4ED8;
-    public static final int COLOR_CARET = 0xFF0000;
 
     private StringBuilder text = new StringBuilder();
     private int cursorPosition = 0;
     private int selectionStart = -1;
     private boolean focused = false;
     private boolean masked = false;
+    private boolean hovered = false;
+    private final List<TextInput.StateChangeListener> stateChangeListeners = new ArrayList<>();
+    private String placeholder = "";
+
+    private int colorDefaultFg = 0xFFFFFF;
+    private int colorDefaultBg = -2;
+    private int colorHoverFg = 0xFFFFFF;
+    private int colorHoverBg = 0x3F3F46;
+    private int colorFocusedFg = 0xFFFFFF;
+    private int colorFocusedBg = 0x27272A;
+    private int colorSelectionFg = 0xFFFFFF;
+    private int colorSelectionBg = 0x1D4ED8;
+    private int colorCaretBg = 0xFF0000;
+    private int colorCaretFg = 0xFFFFFF;
+    private int colorPlaceholderFg = 0x6B7280;
 
     public MultilineTextBox(int x, int y, int width, int height) {
         super(x, y, width, height);
-        this.backgroundColor = COLOR_DEFAULT_BG;
-        this.foregroundColor = COLOR_DEFAULT_FG;
+        this.backgroundColor = colorDefaultBg;
+        this.foregroundColor = colorDefaultFg;
         this.addBehavior(new TextBoxBehaviour());
     }
 
-    public static class LayoutResult {
-        public List<String> lines = new ArrayList<>();
-        public List<Integer> lineStarts = new ArrayList<>();
-        public int caretRow = 0;
-        public int caretCol = 0;
-    }
-
-    public LayoutResult doLayout() {
-        LayoutResult result = new LayoutResult();
-        String str = text.toString();
-        int maxW = width;
-        if (maxW <= 0) maxW = 1;
-
-        if (str.isEmpty()) {
-            result.lines.add("");
-            result.lineStarts.add(0);
-            result.caretRow = 0;
-            result.caretCol = 0;
-            return result;
-        }
-
-        int len = str.length();
-        int lineStart = 0;
-        int i = 0;
-
-        while (i < len) {
-            int lineEnd = lineStart + maxW;
-            if (lineEnd > len) lineEnd = len;
-
-            int newlineIdx = str.substring(lineStart, lineEnd).indexOf('\n');
-            if (newlineIdx != -1) {
-                lineEnd = lineStart + newlineIdx;
-                result.lines.add(str.substring(lineStart, lineEnd));
-                result.lineStarts.add(lineStart);
-                lineStart = lineEnd + 1;
-                i = lineStart;
-                continue;
-            }
-
-            if (lineEnd < len) {
-                int space = str.substring(lineStart, lineEnd).lastIndexOf(' ');
-                if (space > 0) {
-                    lineEnd = lineStart + space;
-                }
-            }
-
-            result.lines.add(str.substring(lineStart, lineEnd));
-            result.lineStarts.add(lineStart);
-
-            if (lineEnd < len && str.charAt(lineEnd) == ' ') {
-                lineStart = lineEnd + 1;
-            } else {
-                lineStart = lineEnd;
-            }
-            i = lineStart;
-        }
-
-        if (len > 0 && str.charAt(len - 1) == '\n') {
-            result.lines.add("");
-            result.lineStarts.add(len);
-        }
-
-        // Caret pos mapping
-        for (int r = 0; r < result.lines.size(); r++) {
-            int start = result.lineStarts.get(r);
-            int end = start + result.lines.get(r).length();
-            if (cursorPosition >= start && cursorPosition <= end) {
-                result.caretRow = r;
-                result.caretCol = cursorPosition - start;
-                break;
-            }
-        }
-
-        return result;
+    public MultilineLayoutEngine.LayoutResult doLayout() {
+        return MultilineLayoutEngine.layout(text.toString(), width, cursorPosition);
     }
 
     @Override
     public void render(FastTerminalScene scene) {
         if (!visible) return;
-        int currentBg = focused ? COLOR_FOCUSED_BG : backgroundColor;
 
-        LayoutResult layout = doLayout();
+        int baseBg = backgroundColor;
+        int baseFg = foregroundColor;
+        if (focused) {
+            baseBg = colorFocusedBg;
+            baseFg = colorFocusedFg;
+        } else if (hovered) {
+            baseBg = colorHoverBg;
+            baseFg = colorHoverFg;
+        }
+
+        MultilineLayoutEngine.LayoutResult layout = doLayout();
 
         int scrollOffset = 0;
         if (layout.caretRow >= height) {
@@ -135,21 +82,28 @@ public class MultilineTextBox extends Control implements TextInput {
                 char ch = ' ';
                 int charIdx = lineStartIdx + c;
 
-                if (c < lineText.length()) {
+                if (text.length() == 0 && placeholder != null && charIdx < placeholder.length()) {
+                    ch = placeholder.charAt(charIdx);
+                } else if (c < lineText.length()) {
                     ch = masked ? '*' : lineText.charAt(c);
                 }
 
-                int cellBg = currentBg;
-                int cellFg = foregroundColor;
+                int cellBg = baseBg;
+                int cellFg = baseFg;
+
+                if (text.length() == 0 && placeholder != null && charIdx < placeholder.length()) {
+                    cellFg = colorPlaceholderFg;
+                }
 
                 // Selection check
                 if (lineIdx < layout.lines.size() && c < lineText.length() && hasSelection() && charIdx >= selMin && charIdx < selMax) {
-                    cellBg = COLOR_SELECTION_BG;
+                    cellBg = colorSelectionBg;
+                    cellFg = colorSelectionFg;
                 } else if (focused && lineIdx == layout.caretRow && c == layout.caretCol) {
                     boolean blinkOn = (System.currentTimeMillis() % 1000 < 500);
                     if (blinkOn) {
-                        ch = '│';
-                        cellFg = COLOR_CARET;
+                        cellBg = colorCaretBg;
+                        cellFg = colorCaretFg;
                     }
                 }
 
@@ -160,7 +114,7 @@ public class MultilineTextBox extends Control implements TextInput {
 
     // Helper to get character index under mouse screen coordinate
     public int getCharIndexAtMouse(int mx, int my) {
-        LayoutResult layout = doLayout();
+        MultilineLayoutEngine.LayoutResult layout = doLayout();
         int caretRow = layout.caretRow;
         int scrollOffset = 0;
         if (caretRow >= height) {
@@ -178,6 +132,78 @@ public class MultilineTextBox extends Control implements TextInput {
 
         int col = Math.max(0, Math.min(relX, lineText.length()));
         return lineStartIdx + col;
+    }
+
+    @Override
+    public boolean isHovered() {
+        return hovered;
+    }
+
+    @Override
+    public void setHovered(boolean hovered) {
+        if (this.hovered != hovered) {
+            this.hovered = hovered;
+            for (TextInput.StateChangeListener listener : stateChangeListeners) {
+                listener.onStateChanged(this);
+            }
+        }
+    }
+
+    @Override
+    public int getColorDefaultFg() { return colorDefaultFg; }
+    @Override
+    public void setColorDefaultFg(int color) { this.colorDefaultFg = color; }
+    @Override
+    public int getColorDefaultBg() { return colorDefaultBg; }
+    @Override
+    public void setColorDefaultBg(int color) { this.colorDefaultBg = color; }
+    @Override
+    public int getColorHoverFg() { return colorHoverFg; }
+    @Override
+    public void setColorHoverFg(int color) { this.colorHoverFg = color; }
+    @Override
+    public int getColorHoverBg() { return colorHoverBg; }
+    @Override
+    public void setColorHoverBg(int color) { this.colorHoverBg = color; }
+    @Override
+    public int getColorFocusedFg() { return colorFocusedFg; }
+    @Override
+    public void setColorFocusedFg(int color) { this.colorFocusedFg = color; }
+    @Override
+    public int getColorFocusedBg() { return colorFocusedBg; }
+    @Override
+    public void setColorFocusedBg(int color) { this.colorFocusedBg = color; }
+    @Override
+    public int getColorSelectionFg() { return colorSelectionFg; }
+    @Override
+    public void setColorSelectionFg(int color) { this.colorSelectionFg = color; }
+    @Override
+    public int getColorSelectionBg() { return colorSelectionBg; }
+    @Override
+    public void setColorSelectionBg(int color) { this.colorSelectionBg = color; }
+    @Override
+    public int getColorCaretBg() { return colorCaretBg; }
+    @Override
+    public void setColorCaretBg(int color) { this.colorCaretBg = color; }
+    @Override
+    public int getColorCaretFg() { return colorCaretFg; }
+    @Override
+    public void setColorCaretFg(int color) { this.colorCaretFg = color; }
+
+    @Override
+    public String getPlaceholder() { return placeholder; }
+    @Override
+    public void setPlaceholder(String placeholder) { this.placeholder = placeholder != null ? placeholder : ""; }
+    @Override
+    public int getColorPlaceholderFg() { return colorPlaceholderFg; }
+    @Override
+    public void setColorPlaceholderFg(int color) { this.colorPlaceholderFg = color; }
+
+    @Override
+    public void addStateChangeListener(StateChangeListener listener) {
+        if (listener != null) {
+            this.stateChangeListeners.add(listener);
+        }
     }
 
     @Override
@@ -276,7 +302,12 @@ public class MultilineTextBox extends Control implements TextInput {
 
     @Override
     public void setFocused(boolean focused) {
-        this.focused = focused;
+        if (this.focused != focused) {
+            this.focused = focused;
+            for (TextInput.StateChangeListener listener : stateChangeListeners) {
+                listener.onStateChanged(this);
+            }
+        }
     }
 
     public void setMasked(boolean masked) {
