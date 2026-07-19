@@ -2,7 +2,7 @@ package fasttui.component;
 
 import fastemojis.FastEmojis;
 import fastterminal.FastTerminalScene;
-import fasttui.composable.Button;
+import fasttui.composable.ComplexButton;
 
 /**
  * A beautiful solid-colored borderless container panel with a clean 3D drop-shadow.
@@ -33,9 +33,9 @@ public class Window extends Container {
     private int shadowFg = 0x000000; 
     private double shadowAlpha = 0.25; 
     private boolean hasResizeButton = true; 
-    private Button resizeButton;            
-    private Button closeButton;             
-    private Button minimizeButton;          
+    private ComplexButton resizeButton;
+    private ComplexButton closeButton;
+    private ComplexButton minimizeButton;
 
     private boolean isMinimized = false;
     private int restoredHeight = -1; 
@@ -46,7 +46,7 @@ public class Window extends Container {
         super(x, y, width, height);
         this.backgroundColor = bgColor;
 
-        this.resizeButton = new Button(width - 1, height - 1, 1, 1, "◢", null);
+        this.resizeButton = new ComplexButton(width - 1, height - 1, 1, 1, "◢", null);
         this.resizeButton.setBackgroundNormal(bgColor);
         this.resizeButton.setBackgroundHover(0xE2E8F0);
         this.resizeButton.setBackgroundPressed(0x94A3B8);
@@ -56,7 +56,7 @@ public class Window extends Container {
         this.resizeButton.setVisible(hasResizeButton);
         add(this.resizeButton);
 
-        this.closeButton = new Button(width - 3, 0, 3, 1, " ✕ ", () -> System.exit(0));
+        this.closeButton = new ComplexButton(width - 3, 0, 3, 1, " ✕ ", () -> System.exit(0));
         this.closeButton.setBackgroundNormal(0xEF4444);
         this.closeButton.setForegroundNormal(0xFFFFFF);
         this.closeButton.setBackgroundHover(0xDC2626);
@@ -66,7 +66,7 @@ public class Window extends Container {
         this.closeButton.setVisible(showWindowButtons && hasHeaderBar);
         add(this.closeButton);
 
-        this.minimizeButton = new Button(width - 6, 0, 3, 1, " _ ", () -> toggleMinimize());
+        this.minimizeButton = new ComplexButton(width - 6, 0, 3, 1, " _ ", () -> toggleMinimize());
         this.minimizeButton.setBackgroundNormal(0xD9C676);
         this.minimizeButton.setForegroundNormal(0x000000);
         this.minimizeButton.setBackgroundHover(0xC9B55F);

@@ -1,12 +1,13 @@
 package fasttui.util;
 
+import fastansi.CellConsumer;
 import fastterminal.FastTerminalScene;
 
 /**
  * @class Gradient
  * @brief High-performance, zero-allocation 24-bit True Color color interpolation engine.
  * 
- * Provides static linear color interpolation (lerp) operations across cell buffer layouts,
+ * Provides static linear color interpolation (lerp) operations across cell consumer layouts,
  * supporting horizontal, vertical, and diagonal gradient space spans.
  */
 public final class Gradient {
@@ -42,208 +43,151 @@ public final class Gradient {
     }
 
     /**
-     * @brief Applies a horizontal linear gradient to background cells in a scene region.
-     * 
-     * @param scene Target scene layer.
-     * @param startX Starting column coordinate.
-     * @param startY Starting row coordinate.
-     * @param width Span width in columns.
-     * @param height Span height in rows.
-     * @param colorStart Starting packed RGB color.
-     * @param colorEnd Ending packed RGB color.
+     * @brief Applies a horizontal linear gradient to background cells.
      */
-    public static void applyHorizontalBg(FastTerminalScene scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
-        int sceneW = scene.getWidth();
-        int sceneH = scene.getHeight();
-        int[] bg = scene.getBgBuffer();
-        
+    public static void applyHorizontalBg(CellConsumer scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
         for (int r = 0; r < height; r++) {
             int row = startY + r;
-            if (row < 0 || row >= sceneH) continue;
-            
             for (int c = 0; c < width; c++) {
                 int col = startX + c;
-                if (col < 0 || col >= sceneW) continue;
-                
                 double t = width > 1 ? (double) c / (width - 1) : 0.0;
-                bg[row * sceneW + col] = interpolate(colorStart, colorEnd, t);
+                scene.writeCell(col, row, -2, -2, interpolate(colorStart, colorEnd, t));
             }
         }
-        scene.setDirty(true);
+        if (scene instanceof FastTerminalScene) {
+            ((FastTerminalScene) scene).setDirty(true);
+        }
     }
 
     /**
-     * @brief Applies a vertical linear gradient to background cells in a scene region.
-     * 
-     * @param scene Target scene layer.
-     * @param startX Starting column coordinate.
-     * @param startY Starting row coordinate.
-     * @param width Span width in columns.
-     * @param height Span height in rows.
-     * @param colorStart Starting packed RGB color.
-     * @param colorEnd Ending packed RGB color.
+     * @brief Applies a vertical linear gradient to background cells.
      */
-    public static void applyVerticalBg(FastTerminalScene scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
-        int sceneW = scene.getWidth();
-        int sceneH = scene.getHeight();
-        int[] bg = scene.getBgBuffer();
-        
+    public static void applyVerticalBg(CellConsumer scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
         for (int r = 0; r < height; r++) {
             int row = startY + r;
-            if (row < 0 || row >= sceneH) continue;
-            
-            double t = height > 1 ? (double) r / (height - 1) : 0.0;
-            int color = interpolate(colorStart, colorEnd, t);
-            
-            for (int c = 0; c < width; c++) {
-                int col = startX + c;
-                if (col < 0 || col >= sceneW) continue;
-                
-                bg[row * sceneW + col] = color;
-            }
-        }
-        scene.setDirty(true);
-    }
-
-    /**
-     * @brief Applies a diagonal linear gradient to background cells in a scene region.
-     * 
-     * @param scene Target scene layer.
-     * @param startX Starting column coordinate.
-     * @param startY Starting row coordinate.
-     * @param width Span width in columns.
-     * @param height Span height in rows.
-     * @param colorStart Starting packed RGB color.
-     * @param colorEnd Ending packed RGB color.
-     */
-    public static void applyDiagonalBg(FastTerminalScene scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
-        int sceneW = scene.getWidth();
-        int sceneH = scene.getHeight();
-        int[] bg = scene.getBgBuffer();
-        int maxDist = (width - 1) + (height - 1);
-        
-        for (int r = 0; r < height; r++) {
-            int row = startY + r;
-            if (row < 0 || row >= sceneH) continue;
-            
-            for (int c = 0; c < width; c++) {
-                int col = startX + c;
-                if (col < 0 || col >= sceneW) continue;
-                
-                double t = maxDist > 0 ? (double) (c + r) / maxDist : 0.0;
-                bg[row * sceneW + col] = interpolate(colorStart, colorEnd, t);
-            }
-        }
-        scene.setDirty(true);
-    }
-
-    /**
-     * @brief Applies a horizontal linear gradient to foreground cells in a scene region.
-     * 
-     * @param scene Target scene layer.
-     * @param startX Starting column coordinate.
-     * @param startY Starting row coordinate.
-     * @param width Span width in columns.
-     * @param height Span height in rows.
-     * @param colorStart Starting packed RGB color.
-     * @param colorEnd Ending packed RGB color.
-     */
-    public static void applyHorizontalFg(FastTerminalScene scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
-        int sceneW = scene.getWidth();
-        int sceneH = scene.getHeight();
-        int[] fg = scene.getFgBuffer();
-        
-        for (int r = 0; r < height; r++) {
-            int row = startY + r;
-            if (row < 0 || row >= sceneH) continue;
-            
-            for (int c = 0; c < width; c++) {
-                int col = startX + c;
-                if (col < 0 || col >= sceneW) continue;
-                
-                double t = width > 1 ? (double) c / (width - 1) : 0.0;
-                fg[row * sceneW + col] = interpolate(colorStart, colorEnd, t);
-            }
-        }
-        scene.setDirty(true);
-    }
-    public static void applyVerticalFg(FastTerminalScene scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
-        int sceneW = scene.getWidth();
-        int sceneH = scene.getHeight();
-        int[] fg = scene.getFgBuffer();
-        for (int r = 0; r < height; r++) {
-            int row = startY + r;
-            if (row < 0 || row >= sceneH) continue;
             double t = height > 1 ? (double) r / (height - 1) : 0.0;
             int color = interpolate(colorStart, colorEnd, t);
             for (int c = 0; c < width; c++) {
                 int col = startX + c;
-                if (col < 0 || col >= sceneW) continue;
-                fg[row * sceneW + col] = color;
+                scene.writeCell(col, row, -2, -2, color);
             }
         }
-        scene.setDirty(true);
+        if (scene instanceof FastTerminalScene) {
+            ((FastTerminalScene) scene).setDirty(true);
+        }
     }
 
-    public static void applyDiagonalFg(FastTerminalScene scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
-        int sceneW = scene.getWidth();
-        int sceneH = scene.getHeight();
-        int[] fg = scene.getFgBuffer();
+    /**
+     * @brief Applies a diagonal linear gradient to background cells.
+     */
+    public static void applyDiagonalBg(CellConsumer scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
         int maxDist = (width - 1) + (height - 1);
         for (int r = 0; r < height; r++) {
             int row = startY + r;
-            if (row < 0 || row >= sceneH) continue;
             for (int c = 0; c < width; c++) {
                 int col = startX + c;
-                if (col < 0 || col >= sceneW) continue;
                 double t = maxDist > 0 ? (double) (c + r) / maxDist : 0.0;
-                fg[row * sceneW + col] = interpolate(colorStart, colorEnd, t);
+                scene.writeCell(col, row, -2, -2, interpolate(colorStart, colorEnd, t));
             }
         }
-        scene.setDirty(true);
+        if (scene instanceof FastTerminalScene) {
+            ((FastTerminalScene) scene).setDirty(true);
+        }
     }
 
-    public static void applyRadialBg(FastTerminalScene scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
-        int sceneW = scene.getWidth();
-        int sceneH = scene.getHeight();
-        int[] bg = scene.getBgBuffer();
+    /**
+     * @brief Applies a horizontal linear gradient to foreground cells.
+     */
+    public static void applyHorizontalFg(CellConsumer scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
+        for (int r = 0; r < height; r++) {
+            int row = startY + r;
+            for (int c = 0; c < width; c++) {
+                int col = startX + c;
+                double t = width > 1 ? (double) c / (width - 1) : 0.0;
+                scene.writeCell(col, row, -2, interpolate(colorStart, colorEnd, t), -2);
+            }
+        }
+        if (scene instanceof FastTerminalScene) {
+            ((FastTerminalScene) scene).setDirty(true);
+        }
+    }
+
+    /**
+     * @brief Applies a vertical linear gradient to foreground cells.
+     */
+    public static void applyVerticalFg(CellConsumer scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
+        for (int r = 0; r < height; r++) {
+            int row = startY + r;
+            double t = height > 1 ? (double) r / (height - 1) : 0.0;
+            int color = interpolate(colorStart, colorEnd, t);
+            for (int c = 0; c < width; c++) {
+                int col = startX + c;
+                scene.writeCell(col, row, -2, color, -2);
+            }
+        }
+        if (scene instanceof FastTerminalScene) {
+            ((FastTerminalScene) scene).setDirty(true);
+        }
+    }
+
+    /**
+     * @brief Applies a diagonal linear gradient to foreground cells.
+     */
+    public static void applyDiagonalFg(CellConsumer scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
+        int maxDist = (width - 1) + (height - 1);
+        for (int r = 0; r < height; r++) {
+            int row = startY + r;
+            for (int c = 0; c < width; c++) {
+                int col = startX + c;
+                double t = maxDist > 0 ? (double) (c + r) / maxDist : 0.0;
+                scene.writeCell(col, row, -2, interpolate(colorStart, colorEnd, t), -2);
+            }
+        }
+        if (scene instanceof FastTerminalScene) {
+            ((FastTerminalScene) scene).setDirty(true);
+        }
+    }
+
+    /**
+     * @brief Applies a radial linear gradient to background cells.
+     */
+    public static void applyRadialBg(CellConsumer scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
         double cx = width / 2.0;
         double cy = height / 2.0;
         double maxDist = Math.sqrt(cx * cx + cy * cy);
         
         for (int r = 0; r < height; r++) {
             int row = startY + r;
-            if (row < 0 || row >= sceneH) continue;
             for (int c = 0; c < width; c++) {
                 int col = startX + c;
-                if (col < 0 || col >= sceneW) continue;
                 double dist = Math.sqrt((c - cx) * (c - cx) + (r - cy) * (r - cy));
                 double t = maxDist > 0 ? dist / maxDist : 0.0;
-                bg[row * sceneW + col] = interpolate(colorStart, colorEnd, t);
+                scene.writeCell(col, row, -2, -2, interpolate(colorStart, colorEnd, t));
             }
         }
-        scene.setDirty(true);
+        if (scene instanceof FastTerminalScene) {
+            ((FastTerminalScene) scene).setDirty(true);
+        }
     }
 
-    public static void applyConicBg(FastTerminalScene scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
-        int sceneW = scene.getWidth();
-        int sceneH = scene.getHeight();
-        int[] bg = scene.getBgBuffer();
+    /**
+     * @brief Applies a conic linear gradient to background cells.
+     */
+    public static void applyConicBg(CellConsumer scene, int startX, int startY, int width, int height, int colorStart, int colorEnd) {
         double cx = width / 2.0;
         double cy = height / 2.0;
         
         for (int r = 0; r < height; r++) {
             int row = startY + r;
-            if (row < 0 || row >= sceneH) continue;
             for (int c = 0; c < width; c++) {
                 int col = startX + c;
-                if (col < 0 || col >= sceneW) continue;
                 double angle = Math.atan2(r - cy, c - cx);
-                // Map angle from [-PI, PI] to [0, 1]
                 double t = (angle + Math.PI) / (2 * Math.PI);
-                bg[row * sceneW + col] = interpolate(colorStart, colorEnd, t);
+                scene.writeCell(col, row, -2, -2, interpolate(colorStart, colorEnd, t));
             }
         }
-        scene.setDirty(true);
+        if (scene instanceof FastTerminalScene) {
+            ((FastTerminalScene) scene).setDirty(true);
+        }
     }
 }

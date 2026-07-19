@@ -4,6 +4,7 @@ import fastterminal.FastTerminalScene;
 import fasttui.component.Component;
 
 public class BarHorizontal extends Component {
+
     private char filledChar = '█';
     private char emptyChar = '░';
     private int filledColor;

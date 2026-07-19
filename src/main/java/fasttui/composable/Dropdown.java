@@ -19,8 +19,8 @@ public class Dropdown extends Container {
     private boolean expanded = false;
     private Consumer<Integer> onSelect;
 
-    private Button headerBtn;
-    private final List<Button> optionBtns = new ArrayList<>();
+    private ComplexButton headerBtn;
+    private final List<ComplexButton> optionBtns = new ArrayList<>();
 
     private int headerBackgroundNormal = -1;
     private int headerForegroundNormal = 0xCCCCCC;
@@ -112,7 +112,7 @@ public class Dropdown extends Container {
         }
         headerText += arrow;
 
-        headerBtn = new Button(0, 0, width, headerHeight, headerText, this::toggleExpanded);
+        headerBtn = new ComplexButton(0, 0, width, headerHeight, headerText, this::toggleExpanded);
         headerBtn.setBorderStyle(headerBorderStyle);
         headerBtn.setBackgroundNormal(headerBackgroundNormal);
         headerBtn.setForegroundNormal(headerForegroundNormal);
@@ -134,7 +134,7 @@ public class Dropdown extends Container {
                     String itemText = items.get(itemIdx);
 
                     final int finalIdx = itemIdx;
-                    Button optBtn = new Button(
+                    ComplexButton optBtn = new ComplexButton(
                             0,
                             headerHeight + i,
                             width,
@@ -147,7 +147,7 @@ public class Dropdown extends Container {
                     optBtn.setForegroundNormal(optionForegroundNormal);
                     optBtn.setBackgroundHover(optionBackgroundHover);
                     optBtn.setForegroundHover(optionForegroundHover);
-                    optBtn.setAlignment(Button.Alignment.LEFT);
+                    optBtn.setAlignment(ComplexButton.Alignment.LEFT);
 
                     this.add(optBtn);
                     this.optionBtns.add(optBtn);
@@ -160,7 +160,7 @@ public class Dropdown extends Container {
                     String itemText = items.get(itemIdx);
 
                     final int finalIdx = itemIdx;
-                    Button optBtn = new Button(
+                    ComplexButton optBtn = new ComplexButton(
                             0,
                             -visibleCount + i,
                             width,
@@ -173,7 +173,7 @@ public class Dropdown extends Container {
                     optBtn.setForegroundNormal(optionForegroundNormal);
                     optBtn.setBackgroundHover(optionBackgroundHover);
                     optBtn.setForegroundHover(optionForegroundHover);
-                    optBtn.setAlignment(Button.Alignment.LEFT);
+                    optBtn.setAlignment(ComplexButton.Alignment.LEFT);
 
                     this.add(optBtn);
                     this.optionBtns.add(optBtn);

@@ -2,143 +2,108 @@ package fasttui.composable;
 
 import fastterminal.FastTerminalScene;
 import fasttui.behaviour.ButtonBehaviour;
-import fasttui.behaviour.ButtonBehaviour.State;
-import fasttui.component.BorderStyle;
-import fasttui.component.Box;
-import fasttui.component.Control;
-import fasttui.component.TextArea;
+import fasttui.behaviour.ButtonListener;
+import fasttui.behaviour.ButtonState;
+import fasttui.component.ColorSet;
+import fasttui.component.LeafControl;
 
-public class Button extends Control {
+public class Button extends LeafControl implements ButtonListener {
 
-    public enum Alignment {LEFT, CENTER, RIGHT}
-
-    private String text;
+    private final ColorSet backgroundColorSet;
+    private final ColorSet foregroundColorSet;
     private final ButtonBehaviour behaviour;
+    private String text;
+    private String paddedText;
 
-    private int backgroundNormal = -1;
-    private int backgroundHover = 0xCCCCCC;
-    private int backgroundPressed = 0x767676;
-
-    private int foregroundNormal = 0xCCCCCC;
-    private int foregroundHover = 0x0C0C0C;
-    private int foregroundPressed = 0x0C0C0C;
-
-    private Alignment alignment = Alignment.CENTER;
-
-    private final Box box;
-    private final TextArea label;
-
-    public Button(int x, int y, int width, int height, String text, Runnable action) {
+    public Button(
+            final int x, final int y,
+            final int width, final int height,
+            final String text,
+            final ColorSet backgroundColorSet,
+            final ColorSet foregroundColorSet,
+            final Runnable action
+    ) {
         super(x, y, width, height);
-        this.text = text;
-
         this.behaviour = new ButtonBehaviour(action);
+        this.behaviour.setListener(this);
         this.addBehavior(this.behaviour);
+        this.setText(text);
+        this.backgroundColorSet = backgroundColorSet;
+        this.foregroundColorSet = foregroundColorSet;
+        this.setButtonState(ButtonState.NORMAL);
+    }
 
-        this.box = new Box(0, 0, width, height);
-        this.box.setBorderStyle(BorderStyle.NONE);
-        this.add(box);
-
-        this.label = new TextArea(0, 0, width, height);
-        this.label.setText(text);
-        this.add(label);
-
-        updateChildLayout();
+    public Button(
+            final int x, final int y,
+            final String text,
+            final int paddingX,
+            final ColorSet backgroundColorSet,
+            final ColorSet foregroundColorSet,
+            final Runnable action
+    ) {
+        super(x, y, (text != null ? text.length() : 0) + paddingX * 2, 1);
+        this.behaviour = new ButtonBehaviour(action);
+        this.behaviour.setListener(this);
+        this.addBehavior(this.behaviour);
+        this.setText(text);
+        this.backgroundColorSet = backgroundColorSet;
+        this.foregroundColorSet = foregroundColorSet;
+        this.setButtonState(ButtonState.NORMAL);
     }
 
     @Override
-    public void render(FastTerminalScene scene) {
-        if (!visible) return;
+    public void render(final FastTerminalScene scene) {
+        if (!this.visible || this.width <= 0) return;
+        scene.writeString(x, y, this.paddedText, this.foregroundColor, this.backgroundColor);
+    }
 
-        State state = behaviour.getState();
+    private String getPaddedText(String text, final int width) {
+        if (text == null) text = "";
+        if (text.length() >= width) {
+            return text.substring(0, width);
+        }
+        final int totalPadding = width - text.length();
+        final int leftPadding = totalPadding / 2;
+        final int rightPadding = totalPadding - leftPadding;
+        return " ".repeat(leftPadding) + text + " ".repeat(rightPadding);
+    }
 
-        int bg;
-        int fg;
+    @Override
+    public void onStateChanged(final ButtonState buttonState) {
+        this.setButtonState(buttonState);
+    }
 
-        switch (state) {
+    public void setButtonState(final ButtonState buttonState) {
+        switch (buttonState) {
+            case FOCUSSED:
+                this.foregroundColor = this.foregroundColorSet.focus;
+                this.backgroundColor = this.backgroundColorSet.focus;
+                break;
             case PRESSED:
-                bg = backgroundPressed;
-                fg = foregroundPressed;
+                this.foregroundColor = this.foregroundColorSet.press;
+                this.backgroundColor = this.backgroundColorSet.press;
                 break;
             case HOVERED:
-                bg = backgroundHover;
-                fg = foregroundHover;
+                this.foregroundColor = this.foregroundColorSet.hover;
+                this.backgroundColor = this.backgroundColorSet.hover;
                 break;
             case NORMAL:
             default:
-                bg = backgroundNormal;
-                fg = foregroundNormal;
+                this.foregroundColor = this.foregroundColorSet.normal;
+                this.backgroundColor = this.backgroundColorSet.normal;
                 break;
         }
-
-        box.setBackgroundColor(bg);
-        label.setBackgroundColor(bg);
-        label.setForegroundColor(fg);
-
-        updateChildLayout();
-        super.render(scene);
     }
 
-    private void updateChildLayout() {
-        boolean hasBorder = (box.getBorderStyle() != BorderStyle.NONE);
-        int textW = text.length();
-        int maxTextW = hasBorder ? width - 2 : width;
-        if (maxTextW < 0) maxTextW = 0;
-
-        int textX = 0;
-        if (alignment == Alignment.CENTER) {
-            textX = (width - textW) / 2;
-        } else if (alignment == Alignment.RIGHT) {
-            textX = width - textW;
-        }
-
-        if (hasBorder) {
-            if (textX < 1) textX = 1;
-        } else {
-            if (textX < 0) textX = 0;
-        }
-
-        int textY = height / 2;
-
-        label.setX(this.x + textX);
-        label.setY(this.y + textY);
-        label.setWidth(Math.min(textW, maxTextW));
-    }
-
-    public void setText(String text) {
+    public void setText(final String text) {
         this.text = text;
+        this.paddedText = this.getPaddedText(text, width);
     }
 
-    public void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
+    @Override
+    public void setWidth(final int width) {
+        super.setWidth(width);
+        this.paddedText = this.getPaddedText(this.text, width);
     }
 
-    public void setBackgroundNormal(int c) {
-        backgroundNormal = c;
-    }
-
-    public void setBackgroundHover(int c) {
-        backgroundHover = c;
-    }
-
-    public void setBackgroundPressed(int c) {
-        backgroundPressed = c;
-    }
-
-    public void setForegroundNormal(int c) {
-        foregroundNormal = c;
-    }
-
-    public void setForegroundHover(int c) {
-        foregroundHover = c;
-    }
-
-    public void setForegroundPressed(int c) {
-        foregroundPressed = c;
-    }
-
-    public void setBorderStyle(BorderStyle style) {
-        box.setBorderStyle(style);
-        updateChildLayout();
-    }
 }

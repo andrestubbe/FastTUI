@@ -37,7 +37,7 @@ public class TextField extends Component {
 
     @Override
     public void render(final FastTerminalScene scene) {
-        scene.writeString(x, y, text, this.foregroundColor, this.backgroundColor);
+        scene.writeString(x, y, text, this.foregroundColor, this.backgroundColor == -1 ? -2 : this.backgroundColor);
     }
 
     public void setText(final String text) {

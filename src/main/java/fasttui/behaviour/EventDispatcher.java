@@ -3,6 +3,7 @@ package fasttui.behaviour;
 import fasttui.component.Component;
 import fasttui.component.Container;
 import fasttui.component.Control;
+import fasttui.component.Interactive;
 
 public class EventDispatcher {
     private static Component hoveredComponent = null;
@@ -19,13 +20,13 @@ public class EventDispatcher {
             }
         }
 
-        if (root instanceof Control && ((Control) root).contains(mx, my)) {
-            Control control = (Control) root;
-            for (Behaviour b : control.getBehaviors()) {
-                if (isPressed) b.onMousePressed(control, mx, my);
-                else b.onMouseReleased(control, mx, my);
+        if (root instanceof Interactive && ((Interactive) root).contains(mx, my)) {
+            Interactive interactive = (Interactive) root;
+            for (Behaviour b : interactive.getBehaviors()) {
+                if (isPressed) b.onMousePressed(root, mx, my);
+                else b.onMouseReleased(root, mx, my);
             }
-            return !control.getBehaviors().isEmpty();
+            return !interactive.getBehaviors().isEmpty();
         }
 
         return false;
@@ -35,35 +36,35 @@ public class EventDispatcher {
         Component hit = findComponentAt(root, mx, my);
 
         if (hit != hoveredComponent) {
-            if (hoveredComponent instanceof Control) {
-                Control hc = (Control) hoveredComponent;
+            if (hoveredComponent instanceof Interactive) {
+                Interactive hc = (Interactive) hoveredComponent;
                 for (Behaviour b : hc.getBehaviors()) {
-                    b.onMouseExit(hc);
+                    b.onMouseExit(hoveredComponent);
                 }
             }
             hoveredComponent = hit;
-            if (hoveredComponent instanceof Control) {
-                Control hc = (Control) hoveredComponent;
+            if (hoveredComponent instanceof Interactive) {
+                Interactive hc = (Interactive) hoveredComponent;
                 for (Behaviour b : hc.getBehaviors()) {
-                    b.onMouseEnter(hc);
+                    b.onMouseEnter(hoveredComponent);
                 }
             }
         }
 
-        if (hoveredComponent instanceof Control) {
-            Control hc = (Control) hoveredComponent;
+        if (hoveredComponent instanceof Interactive) {
+            Interactive hc = (Interactive) hoveredComponent;
             for (Behaviour b : hc.getBehaviors()) {
-                b.onMouseMoved(hc, mx, my);
+                b.onMouseMoved(hoveredComponent, mx, my);
             }
         }
     }
 
     public static void dispatchMouseDrag(Component root, int mx, int my) {
         Component hit = findComponentAt(root, mx, my);
-        if (hit instanceof Control) {
-            Control hc = (Control) hit;
+        if (hit instanceof Interactive) {
+            Interactive hc = (Interactive) hit;
             for (Behaviour b : hc.getBehaviors()) {
-                b.onMouseDragged(hc, mx, my);
+                b.onMouseDragged(hit, mx, my);
             }
         }
     }
@@ -73,7 +74,7 @@ public class EventDispatcher {
                my >= c.getY() && my < c.getY() + c.getHeight();
     }
 
-    private static Component findComponentAt(Component root, int mx, int my) {
+    public static Component findComponentAt(Component root, int mx, int my) {
         if (!root.isVisible() || !isWithinBounds(root, mx, my)) return null;
 
         if (root instanceof Container) {
@@ -81,7 +82,7 @@ public class EventDispatcher {
             for (int i = container.getChildren().size() - 1; i >= 0; i--) {
                 Component hit = findComponentAt(container.getChildren().get(i), mx, my);
                 if (hit != null) {
-                    if (hit instanceof Control || !(root instanceof Control)) {
+                    if (hit instanceof Interactive || !(root instanceof Interactive)) {
                         return hit;
                     }
                 }
@@ -91,3 +92,4 @@ public class EventDispatcher {
         return root;
     }
 }
+

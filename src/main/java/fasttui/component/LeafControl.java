@@ -1,16 +1,15 @@
 package fasttui.component;
 
 import fasttui.behaviour.Behaviour;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class Control extends Container implements Interactive {
+public abstract class LeafControl extends Component implements Interactive {
 
     protected List<Behaviour> behaviors = null;
 
-    public Control(int x, int y, int width, int height) {
+    public LeafControl(int x, int y, int width, int height) {
         super(x, y, width, height);
     }
 
@@ -32,10 +31,12 @@ public abstract class Control extends Container implements Interactive {
         }
     }
 
+    @Override
     public List<Behaviour> getBehaviors() {
         return behaviors == null ? Collections.emptyList() : behaviors;
     }
 
+    @Override
     public boolean contains(int cellX, int cellY) {
         return cellX >= x && cellX < x + width && cellY >= y && cellY < y + height;
     }

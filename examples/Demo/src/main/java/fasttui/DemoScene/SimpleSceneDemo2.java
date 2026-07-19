@@ -11,7 +11,7 @@ import fastterminal.FastTerminalScene;
 import fasttui.behaviour.EventDispatcher;
 import fasttui.component.*;
 import fasttui.composable.BarVertical;
-import fasttui.composable.Button;
+import fasttui.composable.ComplexButton;
 import fasttui.composable.Table;
 import fasttui.composable.Dropdown;
 
@@ -125,7 +125,7 @@ public class SimpleSceneDemo2 {
         Dropdown dropdown = new Dropdown(dropdownX, dropdownY, dropdownW, 3, models, idx -> status.setText("Status: Selected " + models.get(idx)));
         box.add(dropdown);
 
-        Button selectBtn = new Button(30, 4, 20, 3, "Select", () -> {
+        ComplexButton selectBtn = new ComplexButton(30, 4, 20, 3, "Select", () -> {
             int idx = dropdown.getSelectedIndex();
             status.setText("Selected: " + models.get(idx));
         });
@@ -222,7 +222,7 @@ public class SimpleSceneDemo2 {
 
             // Active cell (Button)
             final int rowNum = r + 1;
-            Button actionBtn = new Button(0, 0, columnWidths[3], 1, "Action " + rowNum, () -> {
+            ComplexButton actionBtn = new ComplexButton(0, 0, columnWidths[3], 1, "Action " + rowNum, () -> {
                 tableStatus.setText("Table Action: Executed on Row " + rowNum);
             });
             table.setCell(r, 3, actionBtn);
