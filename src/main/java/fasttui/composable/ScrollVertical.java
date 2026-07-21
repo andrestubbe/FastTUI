@@ -1,22 +1,71 @@
 package fasttui.composable;
 
 import fastterminal.FastTerminalScene;
-import fasttui.component.Component;
+import fasttui.component.ColorSet;
+import fasttui.component.Control;
+import fasttui.behaviour.ScrollBehaviour;
 
-public class ScrollVertical extends Component {
+public class ScrollVertical extends Control {
+
+    public interface ScrollListener {
+        void onScroll(int scrollOffset);
+    }
+
+    private ColorSet colorSetFg;
+    private ColorSet colorSetBg;
 
     private int foregroundColor;
     private int backgroundColor;
 
+    private boolean isHovered = false;
+    private boolean isPressed = false;
+
     private int totalItems = 1;
     private int visibleItems = 1;
     private int scrollOffset = 0;
+    private ScrollListener listener = null;
 
     public ScrollVertical(int x, int y, int height,
                           int foregroundColor, int backgroundColor) {
         super(x, y, 1, height);
         this.foregroundColor = foregroundColor;
         this.backgroundColor = backgroundColor;
+        this.addBehavior(new ScrollBehaviour(this));
+    }
+
+    public ScrollVertical(int x, int y, int height,
+                          ColorSet colorSetFg, ColorSet colorSetBg) {
+        super(x, y, 1, height);
+        this.colorSetFg = colorSetFg;
+        this.colorSetBg = colorSetBg;
+        this.foregroundColor = colorSetFg != null ? colorSetFg.normal : -1;
+        this.backgroundColor = colorSetBg != null ? colorSetBg.normal : -1;
+        this.addBehavior(new ScrollBehaviour(this));
+    }
+
+    public void setHovered(boolean hovered) {
+        this.isHovered = hovered;
+    }
+
+    public void setPressed(boolean pressed) {
+        this.isPressed = pressed;
+    }
+
+    public void setScrollListener(ScrollListener listener) {
+        this.listener = listener;
+    }
+
+    public void handleMouseClickOrDrag(int cellY) {
+        int relativeY = cellY - this.y;
+        if (height > 0 && totalItems > visibleItems) {
+            double ratio = (double) relativeY / height;
+            ratio = Math.max(0.0, Math.min(1.0, ratio));
+            int maxOffset = totalItems - visibleItems;
+            int targetOffset = (int) (ratio * maxOffset);
+            if (listener != null) {
+                listener.onScroll(targetOffset);
+            }
+        }
     }
 
     public void update(int totalItems, int visibleItems, int scrollOffset) {
@@ -30,9 +79,24 @@ public class ScrollVertical extends Component {
     public void render(FastTerminalScene scene) {
         if (!visible || height <= 0) return;
 
+        int activeFg = foregroundColor;
+        int activeBg = backgroundColor;
+
+        if (colorSetFg != null) {
+            if (isPressed) activeFg = colorSetFg.pressed;
+            else if (isHovered) activeFg = colorSetFg.hover;
+            else activeFg = colorSetFg.normal;
+        }
+
+        if (colorSetBg != null) {
+            if (isPressed) activeBg = colorSetBg.pressed;
+            else if (isHovered) activeBg = colorSetBg.hover;
+            else activeBg = colorSetBg.normal;
+        }
+
         // Draw track
         for (int py = 0; py < height; py++) {
-            scene.writeCell(x, y + py, ' ', backgroundColor, backgroundColor);
+            scene.writeCell(x, y + py, ' ', activeBg, activeBg);
         }
 
         // Half-pixel resolution
@@ -65,7 +129,7 @@ public class ScrollVertical extends Component {
             else if (bottomFilled) ch = '▄';
             else ch = ' ';
 
-            scene.writeCell(x, y + cellY, ch, foregroundColor, backgroundColor);
+            scene.writeCell(x, y + cellY, ch, activeFg, activeBg);
         }
     }
 }
