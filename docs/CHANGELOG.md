@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.2] - 2026-07-22
+
+### Added
+- **FastTerminal 0.1.7 Upstream Sync**: Synchronized rendering pipeline to target FastTerminal 0.1.7.
+- **Stateful Text Styles**: Extended `Button` widget with `.setStyle(int style)` support for `FastStyle` bitmask styles (Bold, Italic, Underline, Strikethrough).
+- **1:1 Vertical Scrollbar Dragging**: Enhanced `ScrollVertical` with precise thumb position tracking (`isClickOnThumb`, `getThumbTopCell`, `handleThumbDrag`) and grab offset relative calculations.
+- **Scroll Hover & State Handling**: Added state-resets (`onMouseEnter`, `onMouseExit`) to ensure smooth mouse release dispatches outside component bounds.
+
+## [0.1.1] - 2026-07-19
+
+### Added
+- **Scrollbar Components**: Added `ScrollVertical`, `ScrollHorizontal`, `BarVertical`, and `BarHorizontal`.
+- **Advanced Controls**: Added `MultilineTextBox`, `ComplexButton`, `TreeView`, `Table`, and `PercentageLabel`.
+
 ## [0.1.0] - 2026-06-13
 
 ### Added

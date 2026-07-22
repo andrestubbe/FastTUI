@@ -31,13 +31,12 @@ It delegates the actual cell-buffer drawing and native terminal hooks to its ups
 ## Available Components
 FastTUI provides a comprehensive suite of UI primitives:
 - `Panel`: Movable, resizable windows with title bars and drop shadows.
-- `Button`: Interactive buttons with hover and active states.
-- `Label`: Text displays with rich foreground/background color support.
-- `Input`: Single-line textarea input fields.
-- `Checkbox` & `Radio`: State-toggling controls.
+- `Button` & `ComplexButton`: Interactive buttons with hover, focus, press states, and ANSI text styles (`FastStyle`).
+- `Label` & `PercentageLabel`: Text displays with rich foreground/background color support.
+- `Input` & `MultilineTextBox`: Single-line and multi-line text input fields.
 - `Dropdown`: Expandable selection menus.
-- `ProgressBar`: Smooth, gradient-filled progress tracking.
-- `FileNavigator`: A complex widget for browsing the local filesystem.
+- `ScrollVertical` & `ScrollHorizontal`: Smooth 1:1 mouse-draggable scrollbars with custom thumb & track behaviors.
+- `TreeView` & `Table`: Hierarchical tree navigators and multi-column data tables.
 
 ## Installation
 
