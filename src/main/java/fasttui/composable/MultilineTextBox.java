@@ -187,6 +187,24 @@ public class MultilineTextBox extends Control implements TextInput {
     public int getColorFocusedBg() { return colorFocusedBg; }
     @Override
     public void setColorFocusedBg(int color) { this.colorFocusedBg = color; }
+
+    public void setForegroundSet(fasttui.component.ColorSet colorSet) {
+        if (colorSet != null) {
+            this.colorDefaultFg = colorSet.normal;
+            this.colorHoverFg = colorSet.hover;
+            this.colorFocusedFg = colorSet.focus;
+            this.foregroundColor = colorSet.normal;
+        }
+    }
+
+    public void setBackgroundSet(fasttui.component.ColorSet colorSet) {
+        if (colorSet != null) {
+            this.colorDefaultBg = colorSet.normal;
+            this.colorHoverBg = colorSet.hover;
+            this.colorFocusedBg = colorSet.focus;
+            this.backgroundColor = colorSet.normal;
+        }
+    }
     @Override
     public int getColorSelectionFg() { return colorSelectionFg; }
     @Override
