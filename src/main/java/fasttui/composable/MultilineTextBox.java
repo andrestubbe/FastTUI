@@ -30,6 +30,11 @@ public class MultilineTextBox extends Control implements TextInput {
     private int colorCaretBg = 0xFF0000;
     private int colorCaretFg = 0xFFFFFF;
     private int colorPlaceholderFg = 0x6B7280;
+    private int colorPlaceholderHoverFg = -1;
+    private int colorPlaceholderFocusedFg = -1;
+    private int colorPlaceholderBg = -1;
+    private int colorPlaceholderHoverBg = -1;
+    private int colorPlaceholderFocusedBg = -1;
 
     public MultilineTextBox(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -92,7 +97,16 @@ public class MultilineTextBox extends Control implements TextInput {
                 int cellFg = baseFg;
 
                 if (text.length() == 0 && placeholder != null && charIdx < placeholder.length()) {
-                    cellFg = colorPlaceholderFg;
+                    if (focused) {
+                        cellFg = (colorPlaceholderFocusedFg != -1) ? colorPlaceholderFocusedFg : colorPlaceholderFg;
+                        if (colorPlaceholderFocusedBg != -1) cellBg = colorPlaceholderFocusedBg;
+                    } else if (hovered) {
+                        cellFg = (colorPlaceholderHoverFg != -1) ? colorPlaceholderHoverFg : colorPlaceholderFg;
+                        if (colorPlaceholderHoverBg != -1) cellBg = colorPlaceholderHoverBg;
+                    } else {
+                        cellFg = colorPlaceholderFg;
+                        if (colorPlaceholderBg != -1) cellBg = colorPlaceholderBg;
+                    }
                 }
 
                 // Selection check
@@ -198,6 +212,37 @@ public class MultilineTextBox extends Control implements TextInput {
     public int getColorPlaceholderFg() { return colorPlaceholderFg; }
     @Override
     public void setColorPlaceholderFg(int color) { this.colorPlaceholderFg = color; }
+
+    public int getColorPlaceholderHoverFg() { return colorPlaceholderHoverFg; }
+    public void setColorPlaceholderHoverFg(int color) { this.colorPlaceholderHoverFg = color; }
+
+    public int getColorPlaceholderFocusedFg() { return colorPlaceholderFocusedFg; }
+    public void setColorPlaceholderFocusedFg(int color) { this.colorPlaceholderFocusedFg = color; }
+
+    public int getColorPlaceholderBg() { return colorPlaceholderBg; }
+    public void setColorPlaceholderBg(int color) { this.colorPlaceholderBg = color; }
+
+    public int getColorPlaceholderHoverBg() { return colorPlaceholderHoverBg; }
+    public void setColorPlaceholderHoverBg(int color) { this.colorPlaceholderHoverBg = color; }
+
+    public int getColorPlaceholderFocusedBg() { return colorPlaceholderFocusedBg; }
+    public void setColorPlaceholderFocusedBg(int color) { this.colorPlaceholderFocusedBg = color; }
+
+    public void setPlaceholderForegroundSet(fasttui.component.ColorSet colorSet) {
+        if (colorSet != null) {
+            this.colorPlaceholderFg = colorSet.normal;
+            this.colorPlaceholderHoverFg = colorSet.hover;
+            this.colorPlaceholderFocusedFg = colorSet.focus;
+        }
+    }
+
+    public void setPlaceholderBackgroundSet(fasttui.component.ColorSet colorSet) {
+        if (colorSet != null) {
+            this.colorPlaceholderBg = colorSet.normal;
+            this.colorPlaceholderHoverBg = colorSet.hover;
+            this.colorPlaceholderFocusedBg = colorSet.focus;
+        }
+    }
 
     @Override
     public void addStateChangeListener(StateChangeListener listener) {
