@@ -51,8 +51,50 @@ public class ScrollVertical extends Control {
         this.isPressed = pressed;
     }
 
+    public boolean contains(int cellX, int cellY) {
+        return cellX >= x && cellX < x + width && cellY >= y && cellY < y + height;
+    }
+
     public void setScrollListener(ScrollListener listener) {
         this.listener = listener;
+    }
+
+    public boolean isClickOnThumb(int cellY) {
+        if (totalItems <= visibleItems || height <= 0) return false;
+        int totalHalf = height * 2;
+        int thumbSizeHalf = Math.max(1, (visibleItems * totalHalf) / totalItems);
+        int maxOffset = totalItems - visibleItems;
+        int thumbPosHalf = (maxOffset == 0) ? 0 : (scrollOffset * (totalHalf - thumbSizeHalf)) / maxOffset;
+        int clickHalf = (cellY - this.y) * 2;
+        return (clickHalf >= thumbPosHalf && clickHalf < thumbPosHalf + thumbSizeHalf);
+    }
+
+    public int getThumbTopCell() {
+        if (totalItems <= visibleItems || height <= 0) return 0;
+        int totalHalf = height * 2;
+        int thumbSizeHalf = Math.max(1, (visibleItems * totalHalf) / totalItems);
+        int maxOffset = totalItems - visibleItems;
+        int thumbPosHalf = (maxOffset == 0) ? 0 : (scrollOffset * (totalHalf - thumbSizeHalf)) / maxOffset;
+        return thumbPosHalf / 2;
+    }
+
+    public void handleThumbDrag(int targetThumbTopCell) {
+        if (height <= 0 || totalItems <= visibleItems) return;
+        int totalHalf = height * 2;
+        int thumbSizeHalf = Math.max(1, (visibleItems * totalHalf) / totalItems);
+        int maxOffset = totalItems - visibleItems;
+        int maxThumbTopHalf = totalHalf - thumbSizeHalf;
+        if (maxThumbTopHalf <= 0) return;
+
+        int targetHalf = targetThumbTopCell * 2;
+        targetHalf = Math.max(0, Math.min(maxThumbTopHalf, targetHalf));
+
+        int targetOffset = (int) Math.round((double) targetHalf * maxOffset / maxThumbTopHalf);
+        targetOffset = Math.max(0, Math.min(maxOffset, targetOffset));
+
+        if (listener != null) {
+            listener.onScroll(targetOffset);
+        }
     }
 
     public void handleMouseClickOrDrag(int cellY) {
@@ -83,13 +125,13 @@ public class ScrollVertical extends Control {
         int activeBg = backgroundColor;
 
         if (colorSetFg != null) {
-            if (isPressed) activeFg = colorSetFg.pressed;
+            if (isPressed) activeFg = colorSetFg.press;
             else if (isHovered) activeFg = colorSetFg.hover;
             else activeFg = colorSetFg.normal;
         }
 
         if (colorSetBg != null) {
-            if (isPressed) activeBg = colorSetBg.pressed;
+            if (isPressed) activeBg = colorSetBg.press;
             else if (isHovered) activeBg = colorSetBg.hover;
             else activeBg = colorSetBg.normal;
         }

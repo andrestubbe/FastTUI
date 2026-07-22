@@ -51,10 +51,16 @@ public class Button extends LeafControl implements ButtonListener {
         this.setButtonState(ButtonState.NORMAL);
     }
 
+    private int style = fastterminal.FastStyle.NONE;
+
+    public void setStyle(int style) {
+        this.style = style;
+    }
+
     @Override
     public void render(final FastTerminalScene scene) {
         if (!this.visible || this.width <= 0) return;
-        scene.writeString(x, y, this.paddedText, this.foregroundColor, this.backgroundColor);
+        scene.writeString(x, y, this.paddedText, this.foregroundColor, this.backgroundColor, this.style);
     }
 
     private String getPaddedText(String text, final int width) {

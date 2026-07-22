@@ -1,6 +1,6 @@
-# FastTUI 0.1.1 [ALPHA-2026-07] — Native Windows TUI Framework for Java
+# FastTUI 0.1.2 [ALPHA-2026-07] — Native Windows TUI Framework for Java
 
-[![Status](https://img.shields.io/badge/status-0.1.1-brightgreen.svg)](https://github.com/andrestubbe/FastTUI/releases/tag/0.1.1)
+[![Status](https://img.shields.io/badge/status-0.1.2-brightgreen.svg)](https://github.com/andrestubbe/FastTUI/releases/tag/0.1.2)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
@@ -56,13 +56,13 @@ Add the JitPack repository and the dependency to your `pom.xml`:
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastTUI</artifactId>
-        <version>0.1.1</version>
+        <version>0.1.2</version>
     </dependency>
     <!-- Required for rendering -->
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastTerminal</artifactId>
-        <version>0.1.1</version>
+        <version>0.1.7</version>
     </dependency>
 </dependencies>
 ```
@@ -75,9 +75,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.andrestubbe:FastTUI:0.1.1'
+    implementation 'com.github.andrestubbe:FastTUI:0.1.2'
     // Required for rendering
-    implementation 'com.github.andrestubbe:FastTerminal:0.1.1'
+    implementation 'com.github.andrestubbe:FastTerminal:0.1.7'
 }
 ```
 
@@ -85,8 +85,8 @@ dependencies {
 
 Download the latest JAR directly to add it to your classpath:
 
-1. 📥 **[FastTUI-0.1.1.jar](https://github.com/andrestubbe/FastTUI/releases/download/0.1.1/FastTUI-0.1.1.jar)** (The UI Toolkit)
-2. 📥 **[FastTerminal-0.1.1.jar](https://github.com/andrestubbe/FastTerminal/releases/download/0.1.1/FastTerminal-0.1.1.jar)** (Required rendering engine)
+1. 📥 **[FastTUI-0.1.2.jar](https://github.com/andrestubbe/FastTUI/releases/download/0.1.2/FastTUI-0.1.2.jar)** (The UI Toolkit)
+2. 📥 **[FastTerminal-0.1.7.jar](https://github.com/andrestubbe/FastTerminal/releases/download/0.1.7/FastTerminal-0.1.7.jar)** (Required rendering engine)
 
 ---
 
