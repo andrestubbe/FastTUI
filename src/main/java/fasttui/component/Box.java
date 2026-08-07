@@ -16,11 +16,14 @@ public class Box extends Container {
     public void render(FastTerminalScene scene) {
         if (!visible || width <= 0 || height <= 0) return;
 
+        int absX = getAbsoluteX();
+        int absY = getAbsoluteY();
+
         // Fill background
         if (backgroundColor != -1) {
             for (int r = 0; r < height; r++) {
                 for (int c = 0; c < width; c++) {
-                    scene.writeCell(x + c, y + r, ' ', -1, backgroundColor);
+                    scene.writeCell(absX + c, absY + r, ' ', -1, backgroundColor);
                 }
             }
         }
@@ -43,19 +46,19 @@ public class Box extends Container {
 
             // Horizontal lines
             for (int i = 1; i < width - 1; i++) {
-                scene.writeCell(x + i, y, horizontalTop, drawBorderColor, borderBg);
-                scene.writeCell(x + i, y + height - 1, horizontalBottom, drawBorderColor, borderBg);
+                scene.writeCell(absX + i, absY, horizontalTop, drawBorderColor, borderBg);
+                scene.writeCell(absX + i, absY + height - 1, horizontalBottom, drawBorderColor, borderBg);
             }
             // Vertical lines
             for (int i = 1; i < height - 1; i++) {
-                scene.writeCell(x, y + i, verticalLeft, drawBorderColor, borderBg);
-                scene.writeCell(x + width - 1, y + i, verticalRight, drawBorderColor, borderBg);
+                scene.writeCell(absX, absY + i, verticalLeft, drawBorderColor, borderBg);
+                scene.writeCell(absX + width - 1, absY + i, verticalRight, drawBorderColor, borderBg);
             }
             // Corners
-            scene.writeCell(x, y, topLeft, drawBorderColor, borderBg);
-            scene.writeCell(x + width - 1, y, topRight, drawBorderColor, borderBg);
-            scene.writeCell(x, y + height - 1, bottomLeft, drawBorderColor, borderBg);
-            scene.writeCell(x + width - 1, y + height - 1, bottomRight, drawBorderColor, borderBg);
+            scene.writeCell(absX, absY, topLeft, drawBorderColor, borderBg);
+            scene.writeCell(absX + width - 1, absY, topRight, drawBorderColor, borderBg);
+            scene.writeCell(absX, absY + height - 1, bottomLeft, drawBorderColor, borderBg);
+            scene.writeCell(absX + width - 1, absY + height - 1, bottomRight, drawBorderColor, borderBg);
         }
 
         // Render children

@@ -6,7 +6,7 @@
 
     <groupId>com.github.andrestubbe</groupId>
     <artifactId>FastTUI</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
     <packaging>jar</packaging>
 
     <name>FastTUI</name>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.github.andrestubbe</groupId>
             <artifactId>FastTerminal</artifactId>
-            <version>0.1.7</version>
+            <version>0.1.9</version>
         </dependency>
         <dependency>
             <groupId>com.github.andrestubbe</groupId>
@@ -45,6 +45,11 @@
         <dependency>
             <groupId>com.github.andrestubbe</groupId>
             <artifactId>fastfileindex</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.andrestubbe</groupId>
+            <artifactId>FastEmojis</artifactId>
             <version>0.1.0</version>
         </dependency>
     </dependencies>

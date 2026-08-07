@@ -22,11 +22,63 @@ public final class TerminalGraphics {
     }
 
     /**
-     * Applies a semi-translucent solid color overlay (dimmer/tint) over a specific region of the scene.
-     * Useful for dimming backgrounds, modal backdrops, or applying color filters.
+     * Applies a semi-translucent solid color overlay tint over both Foreground (FG) text characters and Background (BG) cells.
      */
     public static void applyOverlay(FastTerminalScene scene, int x, int y, int w, int h, int color, double opacity) {
-        applyFlatShadow(scene, x, y, w, h, color, opacity);
+        if (opacity <= 0.0) return;
+
+        int sceneW = scene.getWidth();
+        int sceneH = scene.getHeight();
+        int[] fg = scene.getFgBuffer();
+        int[] bg = scene.getBgBuffer();
+
+        double factor = 1.0 - Math.max(0.0, Math.min(1.0, opacity));
+
+        int targetR = (color >> 16) & 0xFF;
+        int targetG = (color >> 8) & 0xFF;
+        int targetB = color & 0xFF;
+
+        for (int r = 0; r < h; r++) {
+            int row = y + r;
+            if (row < 0 || row >= sceneH) continue;
+
+            for (int c = 0; c < w; c++) {
+                int col = x + c;
+                if (col < 0 || col >= sceneW) continue;
+
+                int idx = row * sceneW + col;
+
+                // Tint Foreground (Text / Characters)
+                int origFg = fg[idx];
+                if (origFg != -1 && origFg != -2) {
+                    int fgR = (origFg >> 16) & 0xFF;
+                    int fgG = (origFg >> 8) & 0xFF;
+                    int fgB = origFg & 0xFF;
+
+                    fgR = (int) (fgR * factor + targetR * opacity);
+                    fgG = (int) (fgG * factor + targetG * opacity);
+                    fgB = (int) (fgB * factor + targetB * opacity);
+
+                    scene.getFgBuffer()[idx] = (fgR << 16) | (fgG << 8) | fgB;
+                }
+
+                // Tint Background
+                int origBg = bg[idx];
+                if (origBg == -1 || origBg == -2) {
+                    origBg = 0x222436; // Fallback to main app background
+                }
+
+                int bgR = (origBg >> 16) & 0xFF;
+                int bgG = (origBg >> 8) & 0xFF;
+                int bgB = origBg & 0xFF;
+
+                bgR = (int) (bgR * factor + targetR * opacity);
+                bgG = (int) (bgG * factor + targetG * opacity);
+                bgB = (int) (bgB * factor + targetB * opacity);
+
+                scene.getBgBuffer()[idx] = (bgR << 16) | (bgG << 8) | bgB;
+            }
+        }
     }
 
     /**

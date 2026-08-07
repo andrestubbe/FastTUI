@@ -30,30 +30,41 @@ public final class MultilineLayoutEngine {
         int i = 0;
 
         while (i < len) {
-            int lineEnd = lineStart + maxW;
-            if (lineEnd > len) lineEnd = len;
+            int lineEnd = lineStart;
+            int curWidth = 0;
+            int lastSpace = -1;
 
-            int newlineIdx = text.substring(lineStart, lineEnd).indexOf('\n');
-            if (newlineIdx != -1) {
-                lineEnd = lineStart + newlineIdx;
-                result.lines.add(text.substring(lineStart, lineEnd));
-                result.lineStarts.add(lineStart);
-                lineStart = lineEnd + 1;
-                i = lineStart;
-                continue;
-            }
-
-            if (lineEnd < len) {
-                int space = text.substring(lineStart, lineEnd).lastIndexOf(' ');
-                if (space > 0) {
-                    lineEnd = lineStart + space;
+            while (lineEnd < len) {
+                char ch = text.charAt(lineEnd);
+                if (ch == '\n') {
+                    break;
                 }
+
+                int cp = text.codePointAt(lineEnd);
+                int cpWidth = fastemojis.FastEmojis.getWidth(cp);
+                int step = Character.charCount(cp);
+
+                if (curWidth + cpWidth > maxW) {
+                    if (lastSpace > lineStart) {
+                        lineEnd = lastSpace;
+                    }
+                    break;
+                }
+
+                if (ch == ' ') {
+                    lastSpace = lineEnd;
+                }
+
+                curWidth += cpWidth;
+                lineEnd += step;
             }
 
             result.lines.add(text.substring(lineStart, lineEnd));
             result.lineStarts.add(lineStart);
 
-            if (lineEnd < len && text.charAt(lineEnd) == ' ') {
+            if (lineEnd < len && text.charAt(lineEnd) == '\n') {
+                lineStart = lineEnd + 1;
+            } else if (lineEnd < len && text.charAt(lineEnd) == ' ') {
                 lineStart = lineEnd + 1;
             } else {
                 lineStart = lineEnd;
@@ -66,13 +77,20 @@ public final class MultilineLayoutEngine {
             result.lineStarts.add(len);
         }
 
-        // Caret pos mapping
+        // Caret pos mapping using visual column width
         for (int r = 0; r < result.lines.size(); r++) {
             int start = result.lineStarts.get(r);
             int end = start + result.lines.get(r).length();
             if (cursorPosition >= start && cursorPosition <= end) {
                 result.caretRow = r;
-                result.caretCol = cursorPosition - start;
+                int visCol = 0;
+                String sub = text.substring(start, Math.min(cursorPosition, end));
+                for (int c = 0; c < sub.length(); ) {
+                    int cp = sub.codePointAt(c);
+                    visCol += fastemojis.FastEmojis.getWidth(cp);
+                    c += Character.charCount(cp);
+                }
+                result.caretCol = visCol;
                 break;
             }
         }

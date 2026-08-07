@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.3] - 2026-07-29
+
+### Added
+- **FastEmojis Integration**: Integrated `FastEmojis.getWidth(cp)` column-width calculations into `TextField.setText()` and `MultilineLayoutEngine`.
+- **Emoji-Aware Multiline Layout**: Refactored `MultilineLayoutEngine` line wrapping and caret column positioning to calculate exact terminal visual column offsets for surrogate-pair emojis and East Asian Wide characters.
+- **FastTerminal 0.1.9 Upstream Sync**: Upgraded target engine dependency to FastTerminal `0.1.9`.
+
 ## [0.1.2] - 2026-07-22
 
 ### Added

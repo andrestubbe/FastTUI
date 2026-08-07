@@ -4,6 +4,7 @@ import fastterminal.FastTerminalScene;
 
 public abstract class Component {
 
+    protected Container parent;
     protected int x;
     protected int y;
     protected int width;
@@ -17,6 +18,22 @@ public abstract class Component {
         this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    public Container getParent() {
+        return parent;
+    }
+
+    public void setParent(Container parent) {
+        this.parent = parent;
+    }
+
+    public int getAbsoluteX() {
+        return parent != null ? parent.getAbsoluteX() + this.x : this.x;
+    }
+
+    public int getAbsoluteY() {
+        return parent != null ? parent.getAbsoluteY() + this.y : this.y;
     }
 
     public abstract void render(FastTerminalScene scene);

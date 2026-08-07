@@ -71,9 +71,12 @@ public class MultilineTextBox extends Control implements TextInput {
         int selMin = getSelectionMin();
         int selMax = getSelectionMax();
 
+        int absX = getAbsoluteX();
+        int absY = getAbsoluteY();
+
         for (int r = 0; r < height; r++) {
             int lineIdx = r + scrollOffset;
-            int yPos = y + r;
+            int yPos = absY + r;
 
             String lineText = "";
             int lineStartIdx = 0;
@@ -83,7 +86,7 @@ public class MultilineTextBox extends Control implements TextInput {
             }
 
             for (int c = 0; c < width; c++) {
-                int xPos = x + c;
+                int xPos = absX + c;
                 char ch = ' ';
                 int charIdx = lineStartIdx + c;
 
@@ -300,6 +303,13 @@ public class MultilineTextBox extends Control implements TextInput {
             cursorPosition = min;
             clearSelection();
         }
+    }
+
+    public void insertText(String str) {
+        if (str == null || str.isEmpty()) return;
+        deleteSelection();
+        text.insert(cursorPosition, str);
+        cursorPosition += str.length();
     }
 
     @Override

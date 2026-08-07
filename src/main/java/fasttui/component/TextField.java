@@ -37,12 +37,18 @@ public class TextField extends Component {
 
     @Override
     public void render(final FastTerminalScene scene) {
-        scene.writeString(x, y, text, this.foregroundColor, this.backgroundColor == -1 ? -2 : this.backgroundColor);
+        scene.writeString(getAbsoluteX(), getAbsoluteY(), text, this.foregroundColor, this.backgroundColor == -1 ? -2 : this.backgroundColor);
     }
 
     public void setText(final String text) {
-        this.text = text;
-        this.width = this.text.length();
+        this.text = text != null ? text : "";
+        int visWidth = 0;
+        for (int i = 0; i < this.text.length(); ) {
+            int cp = this.text.codePointAt(i);
+            visWidth += fastemojis.FastEmojis.getWidth(cp);
+            i += Character.charCount(cp);
+        }
+        this.width = visWidth;
     }
 
 }

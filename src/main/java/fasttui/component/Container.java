@@ -15,8 +15,7 @@ public class Container extends Component {
 
     public void add(Component child) {
         if (child != null) {
-            child.setX(this.x + child.getX());
-            child.setY(this.y + child.getY());
+            child.setParent(this);
             children.add(child);
         }
     }
@@ -24,8 +23,7 @@ public class Container extends Component {
     public void addAll(Component[] comps) {
         for (Component child : comps) {
             if (child != null) {
-                child.setX(this.x + child.getX());
-                child.setY(this.y + child.getY());
+                child.setParent(this);
                 children.add(child);
             }
         }
@@ -33,27 +31,38 @@ public class Container extends Component {
 
     public boolean removeChild(Component child) {
         if (child == null) return false;
-        return children.remove(child);
+        if (children.remove(child)) {
+            child.setParent(null);
+            return true;
+        }
+        return false;
     }
 
     public void removeChildren(Component[] comps) {
         if (comps == null || comps.length == 0) return;
         for (Component c : comps) {
-            children.remove(c);
+            if (children.remove(c)) {
+                c.setParent(null);
+            }
         }
     }
 
     public void removeAll() {
+        for (Component child : children) {
+            child.setParent(null);
+        }
         children.clear();
     }
 
     @Override
     public void render(FastTerminalScene scene) {
         if (!visible) return;
+        int absX = getAbsoluteX();
+        int absY = getAbsoluteY();
         if (backgroundColor != -1) {
             for (int r = 0; r < height; r++) {
                 for (int c = 0; c < width; c++) {
-                    scene.writeCell(x + c, y + r, ' ', -1, backgroundColor);
+                    scene.writeCell(absX + c, absY + r, ' ', -1, backgroundColor);
                 }
             }
         }

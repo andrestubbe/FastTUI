@@ -1,6 +1,6 @@
-# FastTUI 0.1.2 [ALPHA-2026-07] — Native Windows TUI Framework for Java
+# FastTUI 0.1.3 [ALPHA-2026-07] — Native Windows TUI Framework for Java
 
-[![Status](https://img.shields.io/badge/status-0.1.2-brightgreen.svg)](https://github.com/andrestubbe/FastTUI/releases/tag/0.1.2)
+[![Status](https://img.shields.io/badge/status-0.1.3-brightgreen.svg)](https://github.com/andrestubbe/FastTUI/releases/tag/0.1.3)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()

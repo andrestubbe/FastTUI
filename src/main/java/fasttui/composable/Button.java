@@ -60,7 +60,7 @@ public class Button extends LeafControl implements ButtonListener {
     @Override
     public void render(final FastTerminalScene scene) {
         if (!this.visible || this.width <= 0) return;
-        scene.writeString(x, y, this.paddedText, this.foregroundColor, this.backgroundColor, this.style);
+        scene.writeString(getAbsoluteX(), getAbsoluteY(), this.paddedText, this.foregroundColor, this.backgroundColor, this.style);
     }
 
     private String getPaddedText(String text, final int width) {

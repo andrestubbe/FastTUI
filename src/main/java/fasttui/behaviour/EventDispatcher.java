@@ -70,8 +70,8 @@ public class EventDispatcher {
     }
 
     private static boolean isWithinBounds(Component c, int mx, int my) {
-        return mx >= c.getX() && mx < c.getX() + c.getWidth() &&
-               my >= c.getY() && my < c.getY() + c.getHeight();
+        return mx >= c.getAbsoluteX() && mx < c.getAbsoluteX() + c.getWidth() &&
+               my >= c.getAbsoluteY() && my < c.getAbsoluteY() + c.getHeight();
     }
 
     public static Component findComponentAt(Component root, int mx, int my) {

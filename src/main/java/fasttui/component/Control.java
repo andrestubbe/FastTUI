@@ -37,6 +37,8 @@ public abstract class Control extends Container implements Interactive {
     }
 
     public boolean contains(int cellX, int cellY) {
-        return cellX >= x && cellX < x + width && cellY >= y && cellY < y + height;
+        int absX = getAbsoluteX();
+        int absY = getAbsoluteY();
+        return cellX >= absX && cellX < absX + width && cellY >= absY && cellY < absY + height;
     }
 }
