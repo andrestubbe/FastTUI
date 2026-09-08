@@ -16,6 +16,8 @@ To achieve a completely responsive, zero-latency desktop terminal experience, Fa
 * ⚡ **[FastANSI](https://github.com/andrestubbe/FastANSI)** — Relies on FastANSI for byte-native escape sequence scanning.
 * ⚡ **[FastASCII](https://github.com/andrestubbe/FastASCII)** — High-performance, zero-allocation byte processing library.
 
+Watch Demo (YouTube) | Watch JMH Benchmark (YouTube)
+
 ---
 
 ## Key Features
