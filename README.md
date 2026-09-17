@@ -20,6 +20,42 @@ Watch Demo (YouTube) | Watch JMH Benchmark (YouTube)
 
 ---
 
+## Table of Contents
+
+- [Why FastTUI?](#why-fasttui)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Available Components](#available-components)
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Platform Support](#platform-support)
+- [License](#license)
+- [Related Projects](#related-projects)
+
+---
+
+## Why FastTUI?
+
+Building rich, interactive terminal user interfaces (TUIs) in Java using legacy libraries like Lanterna or Charva feels outdated and clunky:
+
+- **1990s Aesthetics & 16-Color Limits** — Conventional Java TUI toolkits rely on restricted 16/256-color palettes and cannot render modern 24-bit True Color gradients or soft window drop shadows.
+- **Clunky or Missing Mouse Interactions** — Standard text interfaces treat mouse input as an afterthought, lacking smooth 1:1 drag-and-drop window resizing and pixel-smooth scrollbars.
+- **Tightly Coupled Blocking Rendering** — Mixing component state logic directly with terminal I/O causes UI thread lockups and severe screen tearing during rapid user inputs.
+- **High Object Churn in Layout Trees** — Re-evaluating widget layout boxes and borders on terminal resize events instantiates thousands of transient objects on the JVM heap.
+
+FastTUI solves this by decoupling high-level UI component logic (windows, buttons, dropdowns, tables) from terminal rendering. It routes all compositing through `FastTerminal`'s 60+ FPS zero-allocation ANSI blitter.
+
+| Feature | Lanterna 3 | Charva (AWT for Text) | FastTUI |
+|:---|:---|:---|:---|
+| **Color Fidelity** | 16 / 256 Colors | 16 Colors (ANSI) | **24-bit True Color (RGB Gradients)** |
+| **Window Compositing** | Flat character borders | Heavy AWT peer emulation | **Z-Index + Alpha Drop Shadows** |
+| **Mouse Interaction** | Coarse click support | Basic text cursor clicks | **Full 1:1 Drag, Resize & Smooth Scroll** |
+| **Render Architecture** | Heap cell buffer blit | Simulated AWT repaints | **Decoupled 60+ FPS via FastTerminal** |
+| **Unicode / Emoji Safety**| Frequent width corruption | UTF-16 split issues | **Native UTF-32 Codepoint Grids** |
+| **Dependencies** | Standalone JAR | Heavy native wrappers | **Pure Java 17+ backed by FastCore** |
+
+---
+
 ## Key Features
 - **✨ True-Color Aesthetics:** Full 24-bit RGB support for all components. Includes high-performance utilities for smooth color gradients and transitions.
 - **🖱️ Native Mouse Interaction:** Drag, drop, resize, and click with full mouse support.
