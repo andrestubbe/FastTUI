@@ -1,3 +1,6 @@
+> [!WARNING]
+> **🚧 WIP — Active UI Engine Construction & Layout Architecture Optimization in Progress.**
+
 # FastTUI 0.1.3 [ALPHA-2026-07] — Native Windows TUI Framework for Java
 
 [![Status](https://img.shields.io/badge/status-0.1.3-brightgreen.svg)](https://github.com/andrestubbe/FastTUI/releases/tag/0.1.3)
